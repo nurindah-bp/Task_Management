@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:task_management/views/homepage.dart';
 import 'package:task_management/views/login_page.dart';
 import 'package:task_management/views/projectpage.dart';
+import 'package:task_management/views/tasklistpage.dart';
 
 class NavbarPage extends StatefulWidget {
   const NavbarPage({super.key});
@@ -24,7 +25,7 @@ class _NavbarPageState extends State<NavbarPage> {
     final _listPage = <Widget>[
       HomePage(),
       ProjectPage(),
-      const Text('Tugas'),
+      TaskListPage(),
       const Text('Profil')
     ];
 
@@ -58,9 +59,6 @@ class _NavbarPageState extends State<NavbarPage> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Task Management'),
-      ),
       body: Center(
         child: _listPage[_selectedTabIndex],
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_management/views/login_page.dart';
+import 'package:task_management/views/projectpage.dart';
+import 'package:task_management/views/projectlistpage.dart';
 
 void main() {
   runApp(const MyApp());
