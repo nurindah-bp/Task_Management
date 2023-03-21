@@ -75,12 +75,11 @@ class _LoginPageState extends State<LoginPage> {
                                       child: Center(
                                           child: TextFormField(
                                         decoration: const InputDecoration(
-                                            hintText: 'Email',
+                                            hintText: 'Nomor Induk Pegawai',
                                             border: InputBorder.none,
                                             contentPadding: EdgeInsets.all(8)),
                                         controller: nipController,
-                                        keyboardType:
-                                            TextInputType.emailAddress,
+                                        keyboardType: TextInputType.number,
                                       )))),
                               Container(
                                   margin: const EdgeInsets.only(top: 16),
