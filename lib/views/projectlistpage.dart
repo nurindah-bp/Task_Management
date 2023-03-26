@@ -16,10 +16,16 @@ class ProjectListPage extends StatefulWidget {
 
 class _ProjectListPageState extends State<ProjectListPage> {
   List<Project> listProject = [];
+  List<Project> listProject2 = [];
+  List<Project> listProject3 = [];
   projectListRepo repository = projectListRepo();
+  projectListRepo2 repository2 = projectListRepo2();
+  projectListRepo3 repository3 = projectListRepo3();
 
   getData() async {
     listProject = await repository.getData();
+    listProject2 = await repository2.getData();
+    listProject3 = await repository3.getData();
     setState(() {});
   }
 
@@ -51,31 +57,115 @@ class _ProjectListPageState extends State<ProjectListPage> {
             ],
           ),
         ),
-        body: ListView.separated(
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                      height: 25,
-                      child: Text(
+        body: TabBarView(
+          children: <Widget>[
+            ListView.separated(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      isThreeLine: true,
+                      shape:
+                          Border(left: BorderSide(color: Colors.red, width: 5)),
+                      title: Text(
                         listProject[index].nama_proyek,
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    Text(listProject[index].deskripsi_proyek)
-                  ],
-                ),
-              );
-            },
-            separatorBuilder: (context, index) {
-              return Divider();
-            },
-            itemCount: listProject.length),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            listProject[index].deskripsi_proyek,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.account_circle),
+                              SizedBox(width: 6),
+                              Text(
+                                listProject[index].nama_pegawai,
+                              ),
+                            ],
+                          )
+                        ],
+                      ));
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: listProject.length),
+            ListView.separated(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      isThreeLine: true,
+                      shape: Border(
+                          left: BorderSide(color: Colors.yellow, width: 5)),
+                      title: Text(
+                        listProject3[index].nama_proyek,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            listProject3[index].deskripsi_proyek,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.account_circle),
+                              SizedBox(width: 6),
+                              Text(
+                                listProject3[index].nama_pegawai,
+                              ),
+                            ],
+                          )
+                        ],
+                      ));
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: listProject3.length),
+            ListView.separated(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      isThreeLine: true,
+                      shape: Border(
+                          left: BorderSide(color: Colors.green, width: 5)),
+                      title: Text(
+                        listProject2[index].nama_proyek,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            listProject2[index].deskripsi_proyek,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.account_circle),
+                              SizedBox(width: 6),
+                              Text(
+                                listProject2[index].nama_pegawai,
+                              ),
+                            ],
+                          )
+                        ],
+                      ));
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: listProject2.length),
+          ],
+        ),
       ),
       //   body: new TabBarView(
       //     children: <Widget>[

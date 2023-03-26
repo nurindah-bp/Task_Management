@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:task_management/model/model.dart';
+import 'package:task_management/model/repo.dart';
 
 class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
@@ -10,6 +12,26 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
+  List<Task> activeTask = [];
+  List<Task> pendingTask = [];
+  List<Task> doneTask = [];
+  activeTaskRepo active = activeTaskRepo();
+  pendingTaskRepo pending = pendingTaskRepo();
+  doneTaskRepo done = doneTaskRepo();
+
+  getData() async {
+    activeTask = await active.getData();
+    pendingTask = await pending.getData();
+    doneTask = await done.getData();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -17,7 +39,7 @@ class _TaskListPageState extends State<TaskListPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Daftar Project'),
+          title: const Text('Daftar Tugas'),
           bottom: const TabBar(
             tabs: <Widget>[
               Tab(
@@ -32,77 +54,113 @@ class _TaskListPageState extends State<TaskListPage> {
             ],
           ),
         ),
-        body: new TabBarView(
+        body: TabBarView(
           children: <Widget>[
-            new ListView(
-              padding: const EdgeInsets.all(8),
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[600],
-                  child: Container(
-                    child: Text('Entry A'),
-                    decoration: BoxDecoration(
-                      border: const Border(
-                          left: BorderSide(width: 5, color: Colors.red)),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[500],
-                  child: const Center(child: Text('Entry B')),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[100],
-                  child: const Center(child: Text('Entry C')),
-                ),
-              ],
-            ),
-            new ListView(
-              padding: const EdgeInsets.all(8),
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[600],
-                  child: const Center(child: Text('Entry A')),
-                ),
-              ],
-            ),
-            new ListView(
-              padding: const EdgeInsets.all(8),
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[600],
-                  child: const Center(child: Text('Entry A')),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[500],
-                  child: const Center(child: Text('Entry B')),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[100],
-                  child: const Center(child: Text('Entry C')),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-                  height: 50,
-                  color: Colors.amber[600],
-                  child: const Center(child: Text('Entry A')),
-                ),
-              ],
-            ),
+            ListView.separated(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      isThreeLine: true,
+                      shape:
+                          Border(left: BorderSide(color: Colors.red, width: 5)),
+                      title: Text(
+                        activeTask[index].nama_tugas,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            activeTask[index].deskripsi_tugas,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.account_circle),
+                              SizedBox(width: 6),
+                              Text(
+                                activeTask[index].nama_pegawai,
+                              ),
+                            ],
+                          )
+                        ],
+                      ));
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: activeTask.length),
+            ListView.separated(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      isThreeLine: true,
+                      shape: Border(
+                          left: BorderSide(color: Colors.yellow, width: 5)),
+                      title: Text(
+                        pendingTask[index].nama_tugas,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            pendingTask[index].deskripsi_tugas,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.account_circle),
+                              SizedBox(width: 6),
+                              Text(
+                                pendingTask[index].nama_pegawai,
+                              ),
+                            ],
+                          )
+                        ],
+                      ));
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: pendingTask.length),
+            ListView.separated(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      isThreeLine: true,
+                      shape: Border(
+                          left: BorderSide(color: Colors.green, width: 5)),
+                      title: Text(
+                        doneTask[index].nama_tugas,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            doneTask[index].deskripsi_tugas,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.account_circle),
+                              SizedBox(width: 6),
+                              Text(
+                                doneTask[index].nama_pegawai,
+                              ),
+                            ],
+                          )
+                        ],
+                      ));
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: doneTask.length),
           ],
         ),
       ),

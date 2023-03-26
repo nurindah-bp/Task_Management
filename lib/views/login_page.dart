@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_management/model/utils.dart';
+import 'package:task_management/views/homepage.dart';
 import 'package:task_management/views/navbarpage.dart';
+import 'package:dio/dio.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -66,21 +70,24 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             children: <Widget>[
                               Material(
-                                  color: Colors.white,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(20)),
-                                  elevation: 2,
-                                  child: AspectRatio(
-                                      aspectRatio: 7 / 1,
-                                      child: Center(
-                                          child: TextFormField(
-                                        decoration: const InputDecoration(
-                                            hintText: 'Nomor Induk Pegawai',
-                                            border: InputBorder.none,
-                                            contentPadding: EdgeInsets.all(8)),
-                                        controller: nipController,
-                                        keyboardType: TextInputType.number,
-                                      )))),
+                                color: Colors.white,
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(20)),
+                                elevation: 2,
+                                child: AspectRatio(
+                                  aspectRatio: 7 / 1,
+                                  child: Center(
+                                    child: TextFormField(
+                                      decoration: const InputDecoration(
+                                          hintText: 'Nomor Induk Pegawai',
+                                          border: InputBorder.none,
+                                          contentPadding: EdgeInsets.all(8)),
+                                      controller: nipController,
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               Container(
                                   margin: const EdgeInsets.only(top: 16),
                                   child: Material(
@@ -125,24 +132,25 @@ class _LoginPageState extends State<LoginPage> {
                                         ],
                                       ))),
                               Container(
-                                  margin: const EdgeInsets.only(top: 30),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: MaterialButton(
-                                    onPressed: () {
-                                      loginValidation(context);
-                                    },
-                                    child: const Text("Login",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 16)),
-                                    // color: const Color(0xFFF58634),
-                                    color: Colors.lightBlueAccent,
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50))),
-                                    padding: const EdgeInsets.all(16),
-                                  )),
+                                margin: const EdgeInsets.only(top: 30),
+                                width: MediaQuery.of(context).size.width,
+                                child: MaterialButton(
+                                  onPressed: () {
+                                    loginValidation(context);
+                                  },
+                                  child: const Text("Login",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16)),
+                                  // color: const Color(0xFFF58634),
+                                  color: Colors.lightBlueAccent,
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50))),
+                                  padding: const EdgeInsets.all(16),
+                                ),
+                              ),
                             ],
                           )),
                       const SizedBox(
@@ -226,64 +234,66 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
     if (isLoginValid) {
-      // fetchLogin(context, nipController.text, passwordController.text);
+      fetchLogin(context, nipController.text, passwordController.text);
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => const NavbarPage()));
     }
   }
-// fetchLogin(BuildContext context, String email, String password) async {
-//     final prefs = await SharedPreferences.getInstance();
-//     showLoaderDialog(context);
-//     try {
-//       Response response;
-//       var dio = Dio();
-//       response = await dio.post(
-//         'https://reqres.in/api/login',
-//         data: {
-//           'email': email,
-//           'password': password
-//         },
-//         options: Options(contentType: Headers.jsonContentType),
-//       );
 
-//       if(response.statusCode == 200){
-//         //berhasil
-//         hideLoaderDialog(context);
-//         //setSharedPreference
-//         String prefEmail = email;
-//         String prefToken = response.data['token'];
-//         await prefs.setString('email', prefEmail);
-//         await prefs.setString('token', prefToken);
-//         //Messsage
-//         _onWidgetDidBuild(() {
-//           ScaffoldMessenger.of(context).showSnackBar(
-//             const SnackBar(
-//               content: Text('Login Berhasil'),
-//               backgroundColor: Colors.green,
-//             ),
-//           );
-//         });
-//         //homePage
-//         Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginHomePage()));
-//       }
-//     }on DioError catch (e) {
-//       hideLoaderDialog(context);
-//       if(e.response?.statusCode == 400){
-//         //gagal
-//         String errorMessage = e.response?.data['error'];
-//         _onWidgetDidBuild(() {
-//           ScaffoldMessenger.of(context).showSnackBar(
-//             SnackBar(
-//               content: Text(errorMessage),
-//               backgroundColor: Colors.red,
-//             ),
-//           );
-//         });
-//       }else{
-//         // print(e.message);
-//       }
-//     }
-//   }
+  // fetchLogin(BuildContext context, String nip, String passwd) {
+  //   var res = await
+  // }
+  fetchLogin(BuildContext context, String nip, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    showLoaderDialog(context);
+    try {
+      Response response;
+      var dio = Dio();
+      response = await dio.post(
+        '${Utils.baseUrl}/login',
+        data: {'nip': nip, 'password': password},
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      if (response.statusCode == 200) {
+        //berhasil
+        hideLoaderDialog(context);
+        //setSharedPreference
+        String prefNip = nip;
+        // String prefToken = response.data['token'];
+        await prefs.setString('nip', prefNip);
+        // await prefs.setString('token', prefToken);
+        //Messsage
+        _onWidgetDidBuild(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login Berhasil'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        });
+        //homePage
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const HomePage()));
+      }
+    } on DioError catch (e) {
+      hideLoaderDialog(context);
+      if (e.response?.statusCode == 400) {
+        //gagal
+        String errorMessage = e.response?.data['error'];
+        _onWidgetDidBuild(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+            ),
+          );
+        });
+      } else {
+        // print(e.message);
+      }
+    }
+  }
 
   showLoaderDialog(BuildContext context) {
     AlertDialog alert = AlertDialog(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_management/views/homepage.dart';
 import 'package:task_management/views/login_page.dart';
+import 'package:task_management/views/profilepage.dart';
 import 'package:task_management/views/projectpage.dart';
 import 'package:task_management/views/tasklistpage.dart';
 
@@ -26,7 +27,7 @@ class _NavbarPageState extends State<NavbarPage> {
       HomePage(),
       ProjectPage(),
       TaskListPage(),
-      const Text('Profil')
+      ProfilePage(),
     ];
 
     final _bottomNavBarItems = <BottomNavigationBarItem>[
@@ -64,56 +65,5 @@ class _NavbarPageState extends State<NavbarPage> {
       ),
       bottomNavigationBar: _bottomNavBar,
     );
-    // return Scaffold(
-    //   bottomNavigationBar: NavigationBar(
-    //     onDestinationSelected: (int index) {
-    //       setState(() {
-    //         currentPageIndex = index;
-    //       });
-    //     },
-    //     selectedIndex: currentPageIndex,
-    //     destinations: const <Widget>[
-    //       NavigationDestination(
-    //         icon: Icon(Icons.home),
-    //         label: 'Beranda',
-    //       ),
-    //       NavigationDestination(
-    //         icon: Icon(Icons.task),
-    //         label: 'Projek',
-    //       ),
-    //       NavigationDestination(
-    //         icon: Icon(Icons.add_task),
-    //         label: 'Tugas',
-    //       ),
-    //       NavigationDestination(
-    //         // selectedIcon: Icon(Icons.bookmark),
-    //         icon: Icon(Icons.account_circle),
-    //         label: 'Profil',
-    //       ),
-    //     ],
-    //   ),
-    //   body: <Widget>[
-    //     Container(
-    //       color: Colors.red,
-    //       alignment: Alignment.center,
-    //       child: const Text('Berisi Dashborad'),
-    //     ),
-    //     Container(
-    //       color: Colors.green,
-    //       alignment: Alignment.center,
-    //       child: const Text('Berisi List Proyek'),
-    //     ),
-    //     Container(
-    //       color: Colors.blue,
-    //       alignment: Alignment.center,
-    //       child: const Text('Berisi List Tugas'),
-    //     ),
-    //     Container(
-    //       color: Colors.grey,
-    //       alignment: Alignment.center,
-    //       child: const Text('Berisi Informasi User'),
-    //     ),
-    //   ][currentPageIndex],
-    // );
   }
 }
