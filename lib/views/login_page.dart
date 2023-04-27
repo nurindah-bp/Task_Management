@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                               Material(
                                 color: Colors.white,
                                 borderRadius:
-                                    const BorderRadius.all(Radius.circular(20)),
+                                    const BorderRadius.all(Radius.circular(15)),
                                 elevation: 2,
                                 child: AspectRatio(
                                   aspectRatio: 7 / 1,
@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                                   child: Material(
                                       color: Colors.white,
                                       borderRadius: const BorderRadius.all(
-                                          Radius.circular(20)),
+                                          Radius.circular(15)),
                                       elevation: 2,
                                       child: Row(
                                         children: <Widget>[
