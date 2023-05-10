@@ -1,14 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:task_management/model/repo.dart';
 import 'package:task_management/model/model.dart';
-import 'package:task_management/views/addproject.dart';
-import 'package:task_management/views/homepage.dart';
-import 'package:task_management/views/projecttaskpage.dart';
+import 'package:task_management/views/project/addproject.dart';
+import 'package:task_management/views/project/projecttasklistpage.dart';
 
 class ProjectListPage extends StatefulWidget {
   const ProjectListPage({super.key});
@@ -24,12 +20,14 @@ class _ProjectListPageState extends State<ProjectListPage> {
   projectListRepo repository = projectListRepo();
   projectListRepo2 repository2 = projectListRepo2();
   projectListRepo3 repository3 = projectListRepo3();
+  var loading = false;
 
-  getData() async {
+  Future<Null> getData() async {
     listProject = await repository.getData();
     listProject2 = await repository2.getData();
     listProject3 = await repository3.getData();
     setState(() {});
+    loading = true;
   }
 
   @override
@@ -79,13 +77,14 @@ class _ProjectListPageState extends State<ProjectListPage> {
         body: TabBarView(
           children: <Widget>[
             ListView.separated(
+              itemCount: listProject != null ? listProject.length : 0,
               itemBuilder: (context, index) {
                 // final int params = listProject[index].id_proyek;
                 return ListTile(
                   isThreeLine: true,
                   shape: Border(left: BorderSide(color: Colors.red, width: 5)),
                   title: Text(
-                    listProject[index].nama_proyek,
+                    listProject[index].projectName,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
@@ -95,15 +94,13 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         height: 6,
                       ),
                       Text(
-                        listProject[index].deskripsi_proyek,
+                        listProject[index].projectDescription,
                       ),
                       Row(
                         children: <Widget>[
                           Icon(Icons.account_circle),
                           SizedBox(width: 6),
-                          Text(
-                            listProject[index].nama_pegawai,
-                          ),
+                          Text(listProject[index].employeeName.employeeName),
                         ],
                       )
                     ],
@@ -112,24 +109,24 @@ class _ProjectListPageState extends State<ProjectListPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProjectTaskPage(
-                                listProject[index].nama_pegawai)));
+                            builder: (context) => ProjectTaskListPage(
+                                listProject[index].employeeName.employeeName)));
                   },
                 );
               },
               separatorBuilder: (context, index) {
                 return Divider();
               },
-              itemCount: listProject.length,
             ),
             ListView.separated(
+              itemCount: listProject3 != null ? listProject3.length : 0,
               itemBuilder: (context, index) {
                 return ListTile(
                     isThreeLine: true,
                     shape: Border(
                         left: BorderSide(color: Colors.yellow, width: 5)),
                     title: Text(
-                      listProject3[index].nama_proyek,
+                      listProject3[index].projectName,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
@@ -139,14 +136,14 @@ class _ProjectListPageState extends State<ProjectListPage> {
                           height: 6,
                         ),
                         Text(
-                          listProject3[index].deskripsi_proyek,
+                          listProject3[index].projectDescription,
                         ),
                         Row(
                           children: <Widget>[
                             Icon(Icons.account_circle),
                             SizedBox(width: 6),
                             Text(
-                              listProject3[index].nama_pegawai,
+                              listProject3[index].employeeName.employeeName,
                             ),
                           ],
                         )
@@ -156,16 +153,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
               separatorBuilder: (context, index) {
                 return Divider();
               },
-              itemCount: listProject3.length,
             ),
             ListView.separated(
+              itemCount: listProject2 != null ? listProject2.length : 0,
               itemBuilder: (context, index) {
                 return ListTile(
                     isThreeLine: true,
                     shape:
                         Border(left: BorderSide(color: Colors.green, width: 5)),
                     title: Text(
-                      listProject2[index].nama_proyek,
+                      listProject2[index].projectName,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
@@ -175,14 +172,14 @@ class _ProjectListPageState extends State<ProjectListPage> {
                           height: 6,
                         ),
                         Text(
-                          listProject2[index].deskripsi_proyek,
+                          listProject2[index].projectDescription,
                         ),
                         Row(
                           children: <Widget>[
                             Icon(Icons.account_circle),
                             SizedBox(width: 6),
                             Text(
-                              listProject2[index].nama_pegawai,
+                              listProject2[index].employeeName.employeeName,
                             ),
                           ],
                         )
@@ -192,79 +189,10 @@ class _ProjectListPageState extends State<ProjectListPage> {
               separatorBuilder: (context, index) {
                 return Divider();
               },
-              itemCount: listProject2.length,
             ),
           ],
         ),
       ),
-      //   body: new TabBarView(
-      //     children: <Widget>[
-      //       new ListView(
-      //         padding: const EdgeInsets.all(8),
-      //         children: <Widget>[
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[600],
-      //             child: const Center(child: Text('Entry A')),
-      //           ),
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[500],
-      //             child: const Center(child: Text('Entry B')),
-      //           ),
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[100],
-      //             child: const Center(child: Text('Entry C')),
-      //           ),
-      //         ],
-      //       ),
-      //       new ListView(
-      //         padding: const EdgeInsets.all(8),
-      //         children: <Widget>[
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[600],
-      //             child: const Center(child: Text('Entry A')),
-      //           ),
-      //         ],
-      //       ),
-      //       new ListView(
-      //         padding: const EdgeInsets.all(8),
-      //         children: <Widget>[
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[600],
-      //             child: const Center(child: Text('Entry A')),
-      //           ),
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[500],
-      //             child: const Center(child: Text('Entry B')),
-      //           ),
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[100],
-      //             child: const Center(child: Text('Entry C')),
-      //           ),
-      //           Container(
-      //             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10.0),
-      //             height: 50,
-      //             color: Colors.amber[600],
-      //             child: const Center(child: Text('Entry A')),
-      //           ),
-      //         ],
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 }

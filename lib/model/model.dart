@@ -1,79 +1,113 @@
+class Employee {
+  final String employeeNumber;
+  final String employeeName;
+
+  Employee({required this.employeeNumber, required this.employeeName});
+
+  factory Employee.fromJson(Map<String, dynamic> json) {
+    return Employee(
+      employeeNumber: json['employee_number'],
+      employeeName: json['employee_name'],
+    );
+  }
+}
+
 class Project {
   // final int id_proyek;
-  final String nama_proyek;
-  final String deskripsi_proyek;
-  final String nama_pegawai;
+  final String projectName;
+  final String projectDescription;
+  final Employee employeeName;
 
   const Project({
     // required this.id_proyek,
-    required this.nama_proyek,
-    required this.deskripsi_proyek,
-    required this.nama_pegawai,
+    required this.projectName,
+    required this.projectDescription,
+    required this.employeeName,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
       // id_proyek: json['id_proyek'],
-      nama_proyek: json['nama_proyek'],
-      deskripsi_proyek: json['deskripsi_proyek'],
-      nama_pegawai: json['nama_pegawai'],
-    );
-  }
-}
-
-class Task {
-  final String nama_tugas;
-  final String deskripsi_tugas;
-  final String nama_pegawai;
-
-  const Task({
-    required this.nama_tugas,
-    required this.deskripsi_tugas,
-    required this.nama_pegawai,
-  });
-
-  factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
-      nama_tugas: json['nama_tugas'],
-      deskripsi_tugas: json['deskripsi_tugas'],
-      nama_pegawai: json['nama_pegawai'],
+      projectName: json['project_name'],
+      projectDescription: json['project_description'],
+      employeeName: Employee.fromJson(json['pegawai']),
     );
   }
 }
 
 class ProjectTask {
-  final String nama_tugas;
-  final String deskripsi_tugas;
-  final String nama_pegawai;
+  final int projectId;
+  final String ptaskName;
+  final String ptaskDescription;
+  final Employee employeeName;
 
   const ProjectTask({
-    required this.nama_tugas,
-    required this.deskripsi_tugas,
-    required this.nama_pegawai,
+    required this.projectId,
+    required this.ptaskName,
+    required this.ptaskDescription,
+    required this.employeeName,
   });
 
   factory ProjectTask.fromJson(Map<String, dynamic> json) {
     return ProjectTask(
-      nama_tugas: json['nama_tugas'],
-      deskripsi_tugas: json['deskripsi_tugas'],
-      nama_pegawai: json['nama_pegawai'],
+      projectId: json['project_id'],
+      ptaskName: json['ptask_name'],
+      ptaskDescription: json['ptask_description'],
+      employeeName: Employee.fromJson(json['pegawai']),
+    );
+  }
+}
+
+class ProjectTaskProgress {
+  final String ptask_progress;
+  final String ptask_progressdate;
+
+  const ProjectTaskProgress({
+    required this.ptask_progress,
+    required this.ptask_progressdate,
+  });
+
+  factory ProjectTaskProgress.fromJson(Map<String, dynamic> json) {
+    return ProjectTaskProgress(
+      ptask_progress: json['ptask_progress'],
+      ptask_progressdate: json['ptask_progressdate'],
+    );
+  }
+}
+
+class Task {
+  final String taskName;
+  final String taskDescription;
+  final Employee employeeName;
+
+  const Task({
+    required this.taskName,
+    required this.taskDescription,
+    required this.employeeName,
+  });
+
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      taskName: json['task_name'],
+      taskDescription: json['task_description'],
+      employeeName: Employee.fromJson(json['pegawai']),
     );
   }
 }
 
 class TaskProgress {
-  final String progres_tugas;
-  final String tgl_progres;
+  final String taskProgress;
+  final String taskProgressdate;
 
   const TaskProgress({
-    required this.progres_tugas,
-    required this.tgl_progres,
+    required this.taskProgress,
+    required this.taskProgressdate,
   });
 
   factory TaskProgress.fromJson(Map<String, dynamic> json) {
     return TaskProgress(
-      progres_tugas: json['progres_tugas'],
-      tgl_progres: json['tgl_pengerjaan'],
+      taskProgress: json['task_progress'],
+      taskProgressdate: json['task_progressdate'],
     );
   }
 }

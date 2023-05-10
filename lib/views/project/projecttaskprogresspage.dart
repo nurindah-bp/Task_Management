@@ -4,16 +4,17 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:task_management/model/model.dart';
 import 'package:task_management/model/repo.dart';
 
-class ProjectDetailPage extends StatefulWidget {
-  const ProjectDetailPage({super.key});
+class projecttaskprogresspage extends StatefulWidget {
+  const projecttaskprogresspage({super.key});
 
   @override
-  State<ProjectDetailPage> createState() => _ProjectDetailPageState();
+  State<projecttaskprogresspage> createState() =>
+      _projecttaskprogresspageState();
 }
 
-class _ProjectDetailPageState extends State<ProjectDetailPage> {
+class _projecttaskprogresspageState extends State<projecttaskprogresspage> {
   List<ProjectTask> detilTask = [];
-  List<TaskProgress> progressTask = [];
+  List<ProjectTaskProgress> progressTask = [];
   projecttaskDetil detail = projecttaskDetil();
   projecttaskProgress progress = projecttaskProgress();
 
@@ -33,7 +34,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Tugas'),
+        title: const Text('Detail Proyek Tugas'),
       ),
       body: Row(
         children: <Widget>[
@@ -47,7 +48,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                           left: BorderSide(color: Colors.red, width: 5),
                         ),
                         title: Text(
-                          progressTask[index].progres_tugas,
+                          progressTask[index].ptask_progress,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
@@ -63,7 +64,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                                 ),
                                 SizedBox(width: 10),
                                 Text(
-                                  progressTask[index].tgl_progres,
+                                  progressTask[index].ptask_progressdate,
                                 ),
                               ],
                             ),

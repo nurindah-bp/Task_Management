@@ -16,11 +16,12 @@ Future userLogin(String nip, String passwd) async {
   return decodeData;
 }
 
+// Project Start
 class projectListRepo {
   Future getData() async {
     try {
-      final response =
-          await http.get(Uri.parse('${Utils.baseUrl}/projectList?stproject=1'));
+      final response = await http
+          .get(Uri.parse('${Utils.baseUrl}/project/projectList?stproject=1'));
 
       if (response.statusCode == 200) {
         // If the server did return a 200 OK response,
@@ -44,8 +45,8 @@ class projectListRepo {
 class projectListRepo2 {
   Future getData() async {
     try {
-      final response =
-          await http.get(Uri.parse('${Utils.baseUrl}/projectList?stproject=2'));
+      final response = await http
+          .get(Uri.parse('${Utils.baseUrl}/project/projectList?stproject=2'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -65,8 +66,8 @@ class projectListRepo2 {
 class projectListRepo3 {
   Future getData() async {
     try {
-      final response =
-          await http.get(Uri.parse('${Utils.baseUrl}/projectList?stproject=3'));
+      final response = await http
+          .get(Uri.parse('${Utils.baseUrl}/project/projectList?stproject=3'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -83,71 +84,11 @@ class projectListRepo3 {
   }
 }
 
-class activeTaskRepo {
-  Future getData() async {
-    try {
-      final response =
-          await http.get(Uri.parse('${Utils.baseUrl}/taskList?sttask=1'));
-
-      if (response.statusCode == 200) {
-        print(response.body);
-        Iterable it = jsonDecode(response.body);
-        List<Task> _dataProject = it.map((e) => Task.fromJson(e)).toList();
-        return _dataProject;
-      } else {
-        throw Exception('Failed to load album');
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-}
-
-class pendingTaskRepo {
-  Future getData() async {
-    try {
-      final response =
-          await http.get(Uri.parse('${Utils.baseUrl}/taskList?sttask=3'));
-
-      if (response.statusCode == 200) {
-        print(response.body);
-        Iterable it = jsonDecode(response.body);
-        List<Task> _dataProject = it.map((e) => Task.fromJson(e)).toList();
-        return _dataProject;
-      } else {
-        throw Exception('Failed to load album');
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-}
-
-class doneTaskRepo {
-  Future getData() async {
-    try {
-      final response =
-          await http.get(Uri.parse('${Utils.baseUrl}/taskList?sttask=2'));
-
-      if (response.statusCode == 200) {
-        print(response.body);
-        Iterable it = jsonDecode(response.body);
-        List<Task> _dataProject = it.map((e) => Task.fromJson(e)).toList();
-        return _dataProject;
-      } else {
-        throw Exception('Failed to load album');
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-}
-
 class activeProjectTaskRepo {
   Future getData() async {
     try {
-      final response = await http
-          .get(Uri.parse('${Utils.baseUrl}/projecttaskList?idproj=1&sttask=1'));
+      final response = await http.get(Uri.parse(
+          '${Utils.baseUrl}/project/ptaskList?projectid=1&stptask=1'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -167,8 +108,8 @@ class activeProjectTaskRepo {
 class pendingProjectTaskRepo {
   Future getData() async {
     try {
-      final response = await http
-          .get(Uri.parse('${Utils.baseUrl}/projecttaskList?idproj=1&sttask=3'));
+      final response = await http.get(Uri.parse(
+          '${Utils.baseUrl}/project/ptaskList?projectid=1&stptask=3'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -188,8 +129,8 @@ class pendingProjectTaskRepo {
 class doneProjectTaskRepo {
   Future getData() async {
     try {
-      final response = await http
-          .get(Uri.parse('${Utils.baseUrl}/projecttaskList?idproj=1&sttask=2'));
+      final response = await http.get(Uri.parse(
+          '${Utils.baseUrl}/project/ptaskList?projectid=1&stptask=2'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -210,7 +151,7 @@ class projecttaskDetil {
   Future getData() async {
     try {
       final response = await http
-          .get(Uri.parse('${Utils.baseUrl}/projecttaskDetil?idtask=1'));
+          .get(Uri.parse('${Utils.baseUrl}/project/ptaskDetil?ptaskid=1'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -231,13 +172,13 @@ class projecttaskProgress {
   Future getData() async {
     try {
       final response = await http
-          .get(Uri.parse('${Utils.baseUrl}/projecttaskProgress?idtask=1'));
+          .get(Uri.parse('${Utils.baseUrl}/project/ptaskProgress?ptaskid=1'));
 
       if (response.statusCode == 200) {
         print(response.body);
         Iterable it = jsonDecode(response.body);
-        List<TaskProgress> _dataProject =
-            it.map((e) => TaskProgress.fromJson(e)).toList();
+        List<ProjectTaskProgress> _dataProject =
+            it.map((e) => ProjectTaskProgress.fromJson(e)).toList();
         return _dataProject;
       } else {
         throw Exception('Failed to load album');
@@ -247,3 +188,66 @@ class projecttaskProgress {
     }
   }
 }
+
+// Project End
+// Task Start
+class activeTaskRepo {
+  Future getData() async {
+    try {
+      final response =
+          await http.get(Uri.parse('${Utils.baseUrl}/task/taskList?sttask=1'));
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        Iterable it = jsonDecode(response.body);
+        List<Task> _dataProject = it.map((e) => Task.fromJson(e)).toList();
+        return _dataProject;
+      } else {
+        throw Exception('Failed to load album');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+}
+
+class pendingTaskRepo {
+  Future getData() async {
+    try {
+      final response =
+          await http.get(Uri.parse('${Utils.baseUrl}/task/taskList?sttask=3'));
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        Iterable it = jsonDecode(response.body);
+        List<Task> _dataProject = it.map((e) => Task.fromJson(e)).toList();
+        return _dataProject;
+      } else {
+        throw Exception('Failed to load album');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+}
+
+class doneTaskRepo {
+  Future getData() async {
+    try {
+      final response =
+          await http.get(Uri.parse('${Utils.baseUrl}/task/taskList?sttask=2'));
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        Iterable it = jsonDecode(response.body);
+        List<Task> _dataProject = it.map((e) => Task.fromJson(e)).toList();
+        return _dataProject;
+      } else {
+        throw Exception('Failed to load album');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+}
+//Task End

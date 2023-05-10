@@ -38,6 +38,7 @@ dependencies:
   http: ^0.13.5
   dio: ^5.0.3
   shared_preferences: ^2.0.20
+  date_field: ^3.0.5
 
 dev_dependencies:
   flutter_test:

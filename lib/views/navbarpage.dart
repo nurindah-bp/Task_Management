@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:task_management/views/homepage.dart';
 import 'package:task_management/views/login_page.dart';
 import 'package:task_management/views/profilepage.dart';
-import 'package:task_management/views/projectpage.dart';
-import 'package:task_management/views/tasklistpage.dart';
+import 'package:task_management/views/project/projectpage.dart';
+import 'package:task_management/views/task/tasklistpage.dart';
 
 class NavbarPage extends StatefulWidget {
   const NavbarPage({super.key});

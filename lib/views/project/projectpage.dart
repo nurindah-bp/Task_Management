@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:task_management/views/projectlistpage.dart';
+import 'package:task_management/views/project/projectlistpage.dart';
 
 class ProjectPage extends StatefulWidget {
   const ProjectPage({super.key});
@@ -21,7 +21,8 @@ class _ProjectPageState extends State<ProjectPage> {
   }
 
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/division'));
+    final response =
+        await http.get(Uri.parse('http://10.0.2.2:3000/employee/division'));
     if (response.statusCode == 200) {
       setState(() {
         _data = json.decode(response.body);
@@ -64,7 +65,7 @@ class _ProjectPageState extends State<ProjectPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(item['nama_bidang']),
+                      Text(item['division_name']),
                     ],
                   ),
                 ),

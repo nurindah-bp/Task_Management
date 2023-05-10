@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:task_management/views/projectdetailpage.dart';
+import 'package:task_management/model/model.dart';
+import 'package:task_management/model/repo.dart';
 
-import '../model/model.dart';
-import '../model/repo.dart';
-
-class ProjectTaskPage extends StatefulWidget {
-  const ProjectTaskPage(String params, {super.key});
+class TaskListPage extends StatefulWidget {
+  const TaskListPage({super.key});
 
   @override
-  State<ProjectTaskPage> createState() => _ProjectTaskPageState();
+  State<TaskListPage> createState() => _TaskListPageState();
 }
 
-class _ProjectTaskPageState extends State<ProjectTaskPage> {
-  List<ProjectTask> activeProjectTask = [];
-  List<ProjectTask> pendingProjectTask = [];
-  List<ProjectTask> doneProjectTask = [];
-  activeProjectTaskRepo active = activeProjectTaskRepo();
-  pendingProjectTaskRepo pending = pendingProjectTaskRepo();
-  doneProjectTaskRepo done = doneProjectTaskRepo();
+class _TaskListPageState extends State<TaskListPage> {
+  List<Task> activeTask = [];
+  List<Task> pendingTask = [];
+  List<Task> doneTask = [];
+  activeTaskRepo active = activeTaskRepo();
+  pendingTaskRepo pending = pendingTaskRepo();
+  doneTaskRepo done = doneTaskRepo();
 
   getData() async {
-    activeProjectTask = await active.getData();
-    pendingProjectTask = await pending.getData();
-    doneProjectTask = await done.getData();
+    activeTask = await active.getData();
+    pendingTask = await pending.getData();
+    doneTask = await done.getData();
     setState(() {});
   }
 
@@ -41,7 +39,7 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Daftar Tugas Proyek'),
+          title: const Text('Daftar Tugas'),
           bottom: const TabBar(
             tabs: <Widget>[
               Tab(
@@ -61,45 +59,38 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
             ListView.separated(
                 itemBuilder: (context, index) {
                   return ListTile(
-                    isThreeLine: true,
-                    shape:
-                        Border(left: BorderSide(color: Colors.red, width: 5)),
-                    title: Text(
-                      activeProjectTask[index].nama_tugas,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Text(
-                          activeProjectTask[index].deskripsi_tugas,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Icon(Icons.account_circle),
-                            SizedBox(width: 6),
-                            Text(
-                              activeProjectTask[index].nama_pegawai,
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProjectDetailPage()));
-                    },
-                  );
+                      isThreeLine: true,
+                      shape:
+                          Border(left: BorderSide(color: Colors.red, width: 5)),
+                      title: Text(
+                        activeTask[index].taskName,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            activeTask[index].taskDescription,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.account_circle),
+                              SizedBox(width: 6),
+                              Text(
+                                activeTask[index].employeeName.employeeName,
+                              ),
+                            ],
+                          )
+                        ],
+                      ));
                 },
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: activeProjectTask.length),
+                itemCount: activeTask.length),
             ListView.separated(
                 itemBuilder: (context, index) {
                   return ListTile(
@@ -107,7 +98,7 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
                       shape: Border(
                           left: BorderSide(color: Colors.yellow, width: 5)),
                       title: Text(
-                        pendingProjectTask[index].nama_tugas,
+                        pendingTask[index].taskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
@@ -117,14 +108,14 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
                             height: 6,
                           ),
                           Text(
-                            pendingProjectTask[index].deskripsi_tugas,
+                            pendingTask[index].taskDescription,
                           ),
                           Row(
                             children: <Widget>[
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                pendingProjectTask[index].nama_pegawai,
+                                pendingTask[index].employeeName.employeeName,
                               ),
                             ],
                           )
@@ -134,7 +125,7 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: pendingProjectTask.length),
+                itemCount: pendingTask.length),
             ListView.separated(
                 itemBuilder: (context, index) {
                   return ListTile(
@@ -142,7 +133,7 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
                       shape: Border(
                           left: BorderSide(color: Colors.green, width: 5)),
                       title: Text(
-                        doneProjectTask[index].nama_tugas,
+                        doneTask[index].taskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
@@ -152,14 +143,14 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
                             height: 6,
                           ),
                           Text(
-                            doneProjectTask[index].deskripsi_tugas,
+                            doneTask[index].taskDescription,
                           ),
                           Row(
                             children: <Widget>[
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                doneProjectTask[index].nama_pegawai,
+                                doneTask[index].employeeName.employeeName,
                               ),
                             ],
                           )
@@ -169,7 +160,7 @@ class _ProjectTaskPageState extends State<ProjectTaskPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: doneProjectTask.length),
+                itemCount: doneTask.length),
           ],
         ),
       ),
