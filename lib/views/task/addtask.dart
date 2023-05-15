@@ -1,37 +1,34 @@
 import 'dart:convert';
-
+import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:date_field/date_field.dart';
 import '../../model/utils.dart';
 
-class AddProject extends StatefulWidget {
-  // const AddProject({super.key});
-  final String projectDivId;
-  const AddProject({Key? key, required this.projectDivId}) : super(key: key);
+class AddTask extends StatefulWidget {
+  const AddTask({super.key});
 
   @override
-  State<AddProject> createState() => _AddProjectState();
+  State<AddTask> createState() => _AddTaskState();
 }
 
-class _AddProjectState extends State<AddProject> {
+class _AddTaskState extends State<AddTask> {
   String _sessionId = '';
   List _data = [];
-  int _value = 1;
+  int _pic = 1;
 
-  TextEditingController pName = TextEditingController();
-  TextEditingController pDesc = TextEditingController();
+  TextEditingController taskName = TextEditingController();
+  TextEditingController taskDesc = TextEditingController();
   DateTime? selectedDate;
 
   @override
   void initState() {
-    super.initState();
-    fetchData();
     SessionManager.getSession().then((value) {
       setState(() {
         _sessionId = value.split('-')[0];
       });
     });
+    super.initState();
+    fetchData();
   }
 
   Future<void> fetchData() async {
@@ -47,10 +44,9 @@ class _AddProjectState extends State<AddProject> {
 
   @override
   Widget build(BuildContext context) {
-    String projDiv = widget.projectDivId;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tambah Proyek"),
+        title: Text("Tambah Tugas"),
       ),
       body: Container(
         padding: EdgeInsets.all(20),
@@ -58,13 +54,13 @@ class _AddProjectState extends State<AddProject> {
           children: [
             Container(
               child: TextField(
-                controller: pName,
+                controller: taskName,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  labelText: 'Nama Proyek',
-                  hintText: 'Nama Proyek',
+                  labelText: 'Nama Tugas',
+                  hintText: 'Nama Tugas',
                 ),
                 autofocus: false,
               ),
@@ -75,33 +71,19 @@ class _AddProjectState extends State<AddProject> {
             SizedBox(
               height: 150,
               child: TextField(
-                controller: pDesc,
+                controller: taskDesc,
                 maxLines: null,
                 expands: true,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  labelText: 'Detail Proyek',
-                  hintText: 'Detail Proyek',
+                  labelText: 'Detail Tugas',
+                  hintText: 'Detail Tugas',
                 ),
                 autofocus: false,
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-            // Container(
-            //   child: TextField(
-            //     decoration: InputDecoration(
-            //       border: OutlineInputBorder(
-            //           borderRadius: BorderRadius.all(Radius.circular(10))),
-            //       labelText: 'Lampiran',
-            //       hintText: 'Lampiran',
-            //     ),
-            //     autofocus: false,
-            //   ),
-            // ),
             SizedBox(
               height: 10,
             ),
@@ -114,9 +96,9 @@ class _AddProjectState extends State<AddProject> {
                     );
                   }).toList(),
                   hint: Text("Pilih PIC"),
-                  value: _value,
+                  value: _pic,
                   onChanged: (v) {
-                    _value = v as int;
+                    _pic = v as int;
                     setState(() {});
                   }),
             ),
@@ -134,30 +116,51 @@ class _AddProjectState extends State<AddProject> {
                 },
               ),
             ),
+            SizedBox(
+              height: 10,
+            ),
+            // Container(
+            //   child: Row(
+            //     children: [
+            //       Checkbox(
+            //         value: this._urgent,
+            //         onChanged: (bool? value) {
+            //           setState(() {
+            //             _urgent = value!;
+            //           });
+            //           if (_urgent) {
+            //             urgentval = '1';
+            //           }
+            //         },
+            //       ),
+            //       Text("Urgent"),
+            //     ],
+            //   ),
+            // ),
             Container(
               margin: const EdgeInsets.only(top: 30),
               width: MediaQuery.of(context).size.width,
               child: MaterialButton(
                 onPressed: () async {
                   var myResponse = await http.post(
-                    Uri.parse('${Utils.baseUrl}/project/addProj'),
+                    Uri.parse('${Utils.baseUrl}/task/addTask'),
                     body: {
-                      'projDiv': projDiv,
-                      'projName': pName.text,
-                      'projDesc': pDesc.text,
-                      'projPIC': _value.toString(),
-                      'projDeadline': selectedDate.toString(),
+                      'taskName': taskName.text,
+                      'taskDesc': taskDesc.text,
+                      'taskPIC': _pic.toString(),
+                      'taskDeadline': selectedDate.toString(),
+                      'taskUrgent': '0',
                       'userID': _sessionId,
                     },
                   );
                   print(myResponse.body);
                   setState(() {
-                    pName.clear();
-                    pDesc.clear();
+                    taskName.clear();
+                    taskDesc.clear();
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Sukses Tambah Proyek'),
+                      content: Text('Sukses Tambah Tugas'),
                       backgroundColor: Colors.green,
                     ),
                   );

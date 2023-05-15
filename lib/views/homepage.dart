@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../model/utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,6 +13,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String _sessionValue = '';
+
+  // Future<void> _getSession() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     _sessionValue = prefs.getString('employee_name') ?? '';
+  //   });
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    // _getSession();
+    SessionManager.getSession().then((value) {
+      setState(() {
+        _sessionValue = value.split('-')[1];
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                         border: Border.all(color: Color(0xff0693e3)),
                         borderRadius: BorderRadius.circular(10)),
                     child: Text(
-                      'Hi! Nur Indah',
+                      'Hi! $_sessionValue',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,

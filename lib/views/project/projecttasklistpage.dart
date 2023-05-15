@@ -8,7 +8,10 @@ import '../../model/model.dart';
 import '../../model/repo.dart';
 
 class ProjectTaskListPage extends StatefulWidget {
-  const ProjectTaskListPage(String params, {super.key});
+  // // const ProjectTaskListPage(String params, {super.key});
+  final String projectId;
+  const ProjectTaskListPage({Key? key, required this.projectId})
+      : super(key: key);
 
   @override
   State<ProjectTaskListPage> createState() => _ProjectTaskListPageState();
@@ -23,9 +26,9 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
   doneProjectTaskRepo done = doneProjectTaskRepo();
 
   getData() async {
-    activeProjectTask = await active.getData();
-    pendingProjectTask = await pending.getData();
-    doneProjectTask = await done.getData();
+    activeProjectTask = await active.getData(widget.projectId);
+    pendingProjectTask = await pending.getData(widget.projectId);
+    doneProjectTask = await done.getData(widget.projectId);
     setState(() {});
   }
 
@@ -112,7 +115,9 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => projecttaskprogresspage()));
+                              builder: (context) => projecttaskprogresspage(
+                                  projectTaskId:
+                                      activeProjectTask[index].ptaskId)));
                     },
                   );
                 },

@@ -3,6 +3,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:task_management/model/model.dart';
 import 'package:task_management/model/repo.dart';
+import 'package:task_management/views/task/addtask.dart';
+import 'package:task_management/views/task/tasklistprogress.dart';
 
 class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
@@ -40,6 +42,22 @@ class _TaskListPageState extends State<TaskListPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Daftar Tugas'),
+          automaticallyImplyLeading: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.add_box,
+                color: Colors.white,
+              ),
+              onPressed: () {
+// do something
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddTask()),
+                );
+              },
+            )
+          ],
           bottom: const TabBar(
             tabs: <Widget>[
               Tab(
@@ -59,33 +77,41 @@ class _TaskListPageState extends State<TaskListPage> {
             ListView.separated(
                 itemBuilder: (context, index) {
                   return ListTile(
-                      isThreeLine: true,
-                      shape:
-                          Border(left: BorderSide(color: Colors.red, width: 5)),
-                      title: Text(
-                        activeTask[index].taskName,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(
-                            height: 6,
-                          ),
-                          Text(
-                            activeTask[index].taskDescription,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Icon(Icons.account_circle),
-                              SizedBox(width: 6),
-                              Text(
-                                activeTask[index].employeeName.employeeName,
-                              ),
-                            ],
-                          )
-                        ],
-                      ));
+                    isThreeLine: true,
+                    shape:
+                        Border(left: BorderSide(color: Colors.red, width: 5)),
+                    title: Text(
+                      activeTask[index].taskName,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          activeTask[index].taskDescription,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.account_circle),
+                            SizedBox(width: 6),
+                            Text(
+                              activeTask[index].employeeName.employeeName,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TaskListProgress(
+                                  taskId: activeTask[index].taskId)));
+                    },
+                  );
                 },
                 separatorBuilder: (context, index) {
                   return Divider();

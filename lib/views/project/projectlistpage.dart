@@ -7,7 +7,9 @@ import 'package:task_management/views/project/addproject.dart';
 import 'package:task_management/views/project/projecttasklistpage.dart';
 
 class ProjectListPage extends StatefulWidget {
-  const ProjectListPage({super.key});
+  final String projectDivId;
+  const ProjectListPage({Key? key, required this.projectDivId})
+      : super(key: key);
 
   @override
   State<ProjectListPage> createState() => _ProjectListPageState();
@@ -23,9 +25,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
   var loading = false;
 
   Future<Null> getData() async {
-    listProject = await repository.getData();
-    listProject2 = await repository2.getData();
-    listProject3 = await repository3.getData();
+    listProject = await repository.getData(widget.projectDivId);
+    listProject2 = await repository2.getData(widget.projectDivId);
+    listProject3 = await repository3.getData(widget.projectDivId);
     setState(() {});
     loading = true;
   }
@@ -38,6 +40,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
 
   @override
   Widget build(BuildContext context) {
+    String projDivId = widget.projectDivId;
     return DefaultTabController(
       initialIndex: 0,
       length: 3,
@@ -55,7 +58,10 @@ class _ProjectListPageState extends State<ProjectListPage> {
 // do something
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddProject()),
+                  MaterialPageRoute(
+                      builder: (context) => AddProject(
+                            projectDivId: projDivId,
+                          )),
                 );
               },
             )
@@ -110,7 +116,8 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ProjectTaskListPage(
-                                listProject[index].employeeName.employeeName)));
+                                  projectId: listProject[index].projectId,
+                                )));
                   },
                 );
               },
@@ -122,33 +129,42 @@ class _ProjectListPageState extends State<ProjectListPage> {
               itemCount: listProject3 != null ? listProject3.length : 0,
               itemBuilder: (context, index) {
                 return ListTile(
-                    isThreeLine: true,
-                    shape: Border(
-                        left: BorderSide(color: Colors.yellow, width: 5)),
-                    title: Text(
-                      listProject3[index].projectName,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Text(
-                          listProject3[index].projectDescription,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Icon(Icons.account_circle),
-                            SizedBox(width: 6),
-                            Text(
-                              listProject3[index].employeeName.employeeName,
-                            ),
-                          ],
-                        )
-                      ],
-                    ));
+                  isThreeLine: true,
+                  shape:
+                      Border(left: BorderSide(color: Colors.yellow, width: 5)),
+                  title: Text(
+                    listProject3[index].projectName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 6,
+                      ),
+                      Text(
+                        listProject3[index].projectDescription,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Icon(Icons.account_circle),
+                          SizedBox(width: 6),
+                          Text(
+                            listProject3[index].employeeName.employeeName,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProjectTaskListPage(
+                                  projectId: listProject3[index].projectId,
+                                )));
+                  },
+                );
               },
               separatorBuilder: (context, index) {
                 return Divider();
@@ -158,33 +174,42 @@ class _ProjectListPageState extends State<ProjectListPage> {
               itemCount: listProject2 != null ? listProject2.length : 0,
               itemBuilder: (context, index) {
                 return ListTile(
-                    isThreeLine: true,
-                    shape:
-                        Border(left: BorderSide(color: Colors.green, width: 5)),
-                    title: Text(
-                      listProject2[index].projectName,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Text(
-                          listProject2[index].projectDescription,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Icon(Icons.account_circle),
-                            SizedBox(width: 6),
-                            Text(
-                              listProject2[index].employeeName.employeeName,
-                            ),
-                          ],
-                        )
-                      ],
-                    ));
+                  isThreeLine: true,
+                  shape:
+                      Border(left: BorderSide(color: Colors.green, width: 5)),
+                  title: Text(
+                    listProject2[index].projectName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 6,
+                      ),
+                      Text(
+                        listProject2[index].projectDescription,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Icon(Icons.account_circle),
+                          SizedBox(width: 6),
+                          Text(
+                            listProject2[index].employeeName.employeeName,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProjectTaskListPage(
+                                  projectId: listProject2[index].projectId,
+                                )));
+                  },
+                );
               },
               separatorBuilder: (context, index) {
                 return Divider();

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:task_management/views/project/projectlistpage.dart';
 
+import '../../model/utils.dart';
+
 class ProjectPage extends StatefulWidget {
   const ProjectPage({super.key});
 
@@ -12,17 +14,35 @@ class ProjectPage extends StatefulWidget {
 }
 
 class _ProjectPageState extends State<ProjectPage> {
+  String _sessionPositionID = '';
+  String _sessionDivID = '';
+  String url = "";
   List<dynamic> _data = [];
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    SessionManager.getSession().then((value) {
+      setState(() {
+        _sessionPositionID = value.split('-')[2];
+        _sessionDivID = value.split('-')[3];
+      });
+    });
   }
 
   Future<void> fetchData() async {
-    final response =
-        await http.get(Uri.parse('http://10.0.2.2:3000/employee/division'));
+    String session = await SessionManager.getSession();
+    String sessionPositionId = session.split('-')[2];
+    String sessionDivId = session.split('-')[3];
+    String url;
+
+    if (sessionPositionId == '1') {
+      url = "http://10.0.2.2:3000/employee/divisions";
+    } else {
+      url = "http://10.0.2.2:3000/employee/division?division_id=$sessionDivId";
+    }
+    final response = await http.get(Uri.parse('${url}'));
     if (response.statusCode == 200) {
       setState(() {
         _data = json.decode(response.body);
@@ -58,7 +78,9 @@ class _ProjectPageState extends State<ProjectPage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ProjectListPage()));
+                          builder: (context) => ProjectListPage(
+                                projectDivId: item['division_id'].toString(),
+                              )));
                 },
                 splashColor: Colors.blue,
                 child: Center(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_management/views/login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,10 +18,20 @@ class _ProfilePageState extends State<ProfilePage> {
   late bool obscureText;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+  String _sessionValue = '';
+
+  Future<void> _getSession() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _sessionValue = prefs.getString('employee_name') ?? '';
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     obscureText = true;
+    _getSession();
   }
 
   @override
@@ -49,13 +61,23 @@ class _ProfilePageState extends State<ProfilePage> {
               child: AspectRatio(
                 aspectRatio: 7 / 1,
                 child: Center(
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                        hintText: 'Nomor Induk Pegawai',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(8)),
-                    controller: nipController,
-                    keyboardType: TextInputType.number,
+                  // child: TextFormField(
+                  //   decoration: const InputDecoration(
+                  //       hintText: 'Nomor Induk Pegawai',
+                  //       border: InputBorder.none,
+                  //       contentPadding: EdgeInsets.all(8)),
+                  //   controller: nipController,
+                  //   keyboardType: TextInputType.number,
+                  // ),
+                  child: Text(
+                    '$_sessionValue',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      height: 1.2125,
+                      color: Color(0xff000000),
+                    ),
+                    textAlign: TextAlign.left,
                   ),
                 ),
               ),
@@ -159,8 +181,13 @@ class _ProfilePageState extends State<ProfilePage> {
               margin: const EdgeInsets.only(top: 30),
               width: MediaQuery.of(context).size.width,
               child: MaterialButton(
-                onPressed: () {
-                  loginValidation(context);
+                onPressed: () async {
+                  // loginValidation(context);
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.remove('user_id');
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LoginPage()));
                 },
                 child: const Text("Keluar",
                     style: TextStyle(

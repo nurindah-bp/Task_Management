@@ -1,37 +1,52 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:date_field/date_field.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
+
+import '../../model/model.dart';
+import '../../model/repo.dart';
 import '../../model/utils.dart';
 
-class AddProject extends StatefulWidget {
-  // const AddProject({super.key});
-  final String projectDivId;
-  const AddProject({Key? key, required this.projectDivId}) : super(key: key);
+class UpdateProjectTask extends StatefulWidget {
+  final String projectTaskId;
+  const UpdateProjectTask({Key? key, required this.projectTaskId})
+      : super(key: key);
 
   @override
-  State<AddProject> createState() => _AddProjectState();
+  State<UpdateProjectTask> createState() => _UpdateProjectTaskState();
 }
 
-class _AddProjectState extends State<AddProject> {
-  String _sessionId = '';
+class _UpdateProjectTaskState extends State<UpdateProjectTask> {
+  List<ProjectTask> detilTask = [];
+  projecttaskDetil detail = projecttaskDetil();
   List _data = [];
-  int _value = 1;
-
-  TextEditingController pName = TextEditingController();
-  TextEditingController pDesc = TextEditingController();
+  List _dataProject = [];
+  int _pic = 1;
+  int _project = 1;
+  TextEditingController pTaskName = TextEditingController();
+  TextEditingController pTaskDesc = TextEditingController();
   DateTime? selectedDate;
+  String _sessionId = '';
+
+  getData() async {
+    detilTask = await detail.getData(widget.projectTaskId);
+    setState(() {});
+  }
 
   @override
   void initState() {
-    super.initState();
-    fetchData();
     SessionManager.getSession().then((value) {
       setState(() {
         _sessionId = value.split('-')[0];
       });
     });
+    getData();
+    super.initState();
+    fetchDataProject();
+    fetchData();
   }
 
   Future<void> fetchData() async {
@@ -45,26 +60,55 @@ class _AddProjectState extends State<AddProject> {
     }
   }
 
+  Future<void> fetchDataProject() async {
+    final response = await http.get(Uri.parse('${Utils.baseUrl}/project/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        _dataProject = json.decode(response.body);
+      });
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    String projDiv = widget.projectDivId;
+    String projTaskId = widget.projectTaskId;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tambah Proyek"),
+        title: Text("Edit Tugas Proyek"),
       ),
       body: Container(
         padding: EdgeInsets.all(20),
         child: ListView(
           children: [
             Container(
+              child: DropdownButton(
+                  items: _dataProject.map((e) {
+                    return DropdownMenuItem(
+                      child: Text(e["project_name"]),
+                      value: e["project_id"],
+                    );
+                  }).toList(),
+                  hint: Text("Pilih Proyek"),
+                  value: _project,
+                  onChanged: (v) {
+                    _project = v as int;
+                    setState(() {});
+                  }),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
               child: TextField(
-                controller: pName,
+                controller: pTaskName,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  labelText: 'Nama Proyek',
-                  hintText: 'Nama Proyek',
+                  labelText: 'Nama Tugas',
+                  hintText: 'Nama Tugas',
                 ),
                 autofocus: false,
               ),
@@ -75,15 +119,15 @@ class _AddProjectState extends State<AddProject> {
             SizedBox(
               height: 150,
               child: TextField(
-                controller: pDesc,
+                controller: pTaskDesc,
                 maxLines: null,
                 expands: true,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  labelText: 'Detail Proyek',
-                  hintText: 'Detail Proyek',
+                  labelText: 'Detail Tugas',
+                  hintText: 'Detail Tugas',
                 ),
                 autofocus: false,
               ),
@@ -91,32 +135,18 @@ class _AddProjectState extends State<AddProject> {
             SizedBox(
               height: 10,
             ),
-            // Container(
-            //   child: TextField(
-            //     decoration: InputDecoration(
-            //       border: OutlineInputBorder(
-            //           borderRadius: BorderRadius.all(Radius.circular(10))),
-            //       labelText: 'Lampiran',
-            //       hintText: 'Lampiran',
-            //     ),
-            //     autofocus: false,
-            //   ),
-            // ),
-            SizedBox(
-              height: 10,
-            ),
             Container(
               child: DropdownButton(
+                  hint: Text("Pilih PIC"),
                   items: _data.map((e) {
                     return DropdownMenuItem(
                       child: Text(e["employee_name"]),
                       value: e["employee_id"],
                     );
                   }).toList(),
-                  hint: Text("Pilih PIC"),
-                  value: _value,
+                  value: _pic,
                   onChanged: (v) {
-                    _value = v as int;
+                    _pic = v as int;
                     setState(() {});
                   }),
             ),
@@ -134,30 +164,53 @@ class _AddProjectState extends State<AddProject> {
                 },
               ),
             ),
+            SizedBox(
+              height: 10,
+            ),
+            // Container(
+            //   child: Row(
+            //     children: [
+            //       Checkbox(
+            //         value: this._urgent,
+            //         onChanged: (bool? value) {
+            //           setState(() {
+            //             _urgent = value!;
+            //           });
+            //           if (_urgent) {
+            //             urgentval = '1';
+            //           }
+            //         },
+            //       ),
+            //       Text("Urgent"),
+            //     ],
+            //   ),
+            // ),
             Container(
               margin: const EdgeInsets.only(top: 30),
               width: MediaQuery.of(context).size.width,
               child: MaterialButton(
                 onPressed: () async {
                   var myResponse = await http.post(
-                    Uri.parse('${Utils.baseUrl}/project/addProj'),
+                    Uri.parse('${Utils.baseUrl}/project/updateProjTask'),
                     body: {
-                      'projDiv': projDiv,
-                      'projName': pName.text,
-                      'projDesc': pDesc.text,
-                      'projPIC': _value.toString(),
-                      'projDeadline': selectedDate.toString(),
+                      'projTaskName': pTaskName.text,
+                      'projTaskDesc': pTaskDesc.text,
+                      'projID': _project.toString(),
+                      'projTaskPIC': _pic.toString(),
+                      'projTaskDeadline': selectedDate.toString(),
+                      'projTaskUrgent': '0',
                       'userID': _sessionId,
+                      'projTaskID': projTaskId,
                     },
                   );
                   print(myResponse.body);
                   setState(() {
-                    pName.clear();
-                    pDesc.clear();
+                    pTaskName.clear();
+                    pTaskDesc.clear();
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Sukses Tambah Proyek'),
+                      content: Text('Sukses Edit Tugas Proyek'),
                       backgroundColor: Colors.green,
                     ),
                   );

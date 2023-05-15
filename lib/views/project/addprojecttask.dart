@@ -12,6 +12,7 @@ class AddProjectTask extends StatefulWidget {
 }
 
 class _AddProjectTaskState extends State<AddProjectTask> {
+  String _sessionId = '';
   List _data = [];
   List _dataProject = [];
   int _pic = 1;
@@ -25,6 +26,11 @@ class _AddProjectTaskState extends State<AddProjectTask> {
 
   @override
   void initState() {
+    SessionManager.getSession().then((value) {
+      setState(() {
+        _sessionId = value.split('-')[0];
+      });
+    });
     super.initState();
     fetchDataProject();
     fetchData();
@@ -64,18 +70,19 @@ class _AddProjectTaskState extends State<AddProjectTask> {
           children: [
             Container(
               child: DropdownButton(
-                  items: _dataProject.map((e) {
-                    return DropdownMenuItem(
-                      child: Text(e["project_name"]),
-                      value: e["project_id"],
-                    );
-                  }).toList(),
-                  hint: Text("Pilih Proyek"),
-                  value: _project,
-                  onChanged: (v) {
-                    _project = v as int;
-                    setState(() {});
-                  }),
+                items: _dataProject.map((e) {
+                  return DropdownMenuItem(
+                    child: Text(e["project_name"]),
+                    value: e["project_id"],
+                  );
+                }).toList(),
+                hint: Text("Pilih Proyek"),
+                value: _project,
+                onChanged: (v) {
+                  _project = v as int;
+                  setState(() {});
+                },
+              ),
             ),
             SizedBox(
               height: 10,
@@ -117,18 +124,19 @@ class _AddProjectTaskState extends State<AddProjectTask> {
             ),
             Container(
               child: DropdownButton(
-                  items: _data.map((e) {
-                    return DropdownMenuItem(
-                      child: Text(e["employee_name"]),
-                      value: e["employee_id"],
-                    );
-                  }).toList(),
-                  hint: Text("Pilih PIC"),
-                  value: _pic,
-                  onChanged: (v) {
-                    _pic = v as int;
-                    setState(() {});
-                  }),
+                hint: Text("Pilih PIC"),
+                items: _data.map((e) {
+                  return DropdownMenuItem(
+                    child: Text(e["employee_name"]),
+                    value: e["employee_id"],
+                  );
+                }).toList(),
+                value: _pic,
+                onChanged: (v) {
+                  _pic = v as int;
+                  setState(() {});
+                },
+              ),
             ),
             SizedBox(
               height: 10,
@@ -179,7 +187,7 @@ class _AddProjectTaskState extends State<AddProjectTask> {
                       'projTaskPIC': _pic.toString(),
                       'projTaskDeadline': selectedDate.toString(),
                       'projTaskUrgent': '0',
-                      'userID': '1',
+                      'userID': _sessionId,
                     },
                   );
                   print(myResponse.body);
