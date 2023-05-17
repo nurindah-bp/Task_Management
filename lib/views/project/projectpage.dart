@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:task_management/utils/endpoint.dart';
+import 'package:task_management/utils/endpoint.dart';
+import 'package:task_management/utils/session_manager.dart';
 import 'package:task_management/views/project/projectlistpage.dart';
-
-import '../../model/utils.dart';
 
 class ProjectPage extends StatefulWidget {
   const ProjectPage({super.key});
@@ -38,9 +39,9 @@ class _ProjectPageState extends State<ProjectPage> {
     String url;
 
     if (sessionPositionId == '1') {
-      url = "http://10.0.2.2:3000/employee/divisions";
+      url = "${Endpoint.baseUrl}/employee/divisions";
     } else {
-      url = "http://10.0.2.2:3000/employee/division?division_id=$sessionDivId";
+      url = "${Endpoint.baseUrl}/employee/division?division_id=$sessionDivId";
     }
     final response = await http.get(Uri.parse('${url}'));
     if (response.statusCode == 200) {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:task_management/model/model.dart';
 import 'package:task_management/model/repo.dart';
+import 'package:task_management/models/task.dart';
 import 'package:task_management/views/task/addtask.dart';
 import 'package:task_management/views/task/tasklistprogress.dart';
 

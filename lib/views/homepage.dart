@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../model/utils.dart';
+import 'package:task_management/model/repo.dart';
+import 'package:task_management/models/dash_procastination.dart';
+import 'package:task_management/utils/session_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,22 +12,28 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _sessionValue = '';
-
-  // Future<void> _getSession() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     _sessionValue = prefs.getString('employee_name') ?? '';
-  //   });
-  // }
+  late List<DashProcastination> dataProkastinasi;
+  final Procastination _dataProkastinasi = Procastination();
+  bool isLoading = true;
 
   @override
   void initState() {
-    super.initState();
     // _getSession();
+    dataProkastinasi = [];
+    loadData();
+    super.initState();
     SessionManager.getSession().then((value) {
       setState(() {
         _sessionValue = value.split('-')[1];
       });
+    });
+  }
+
+  Future<void> loadData() async {
+    dataProkastinasi = await _dataProkastinasi.getData();
+    setState(() {
+      // dataProkastinasi = result;
+      isLoading = false;
     });
   }
 

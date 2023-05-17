@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:task_management/model/model.dart';
 import 'package:task_management/model/repo.dart';
-
-import '../../model/utils.dart';
+import 'package:task_management/models/task.dart';
+import 'package:task_management/utils/endpoint.dart';
+import 'package:task_management/utils/endpoint.dart';
+import 'package:task_management/utils/endpoint.dart';
+import 'package:task_management/utils/session_manager.dart';
 
 class UpdateTask extends StatefulWidget {
   final String taskId;
@@ -49,7 +51,7 @@ class _UpdateTaskState extends State<UpdateTask> {
   }
 
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('${Utils.baseUrl}/employee/'));
+    final response = await http.get(Uri.parse('${Endpoint.baseUrl}/employee/'));
     if (response.statusCode == 200) {
       setState(() {
         _data = json.decode(response.body);
@@ -60,7 +62,7 @@ class _UpdateTaskState extends State<UpdateTask> {
   }
 
   Future<void> fetchDataProject() async {
-    final response = await http.get(Uri.parse('${Utils.baseUrl}/project/'));
+    final response = await http.get(Uri.parse('${Endpoint.baseUrl}/project/'));
     if (response.statusCode == 200) {
       setState(() {
         _dataProject = json.decode(response.body);
@@ -172,7 +174,7 @@ class _UpdateTaskState extends State<UpdateTask> {
               child: MaterialButton(
                 onPressed: () async {
                   var myResponse = await http.post(
-                    Uri.parse('${Utils.baseUrl}/task/updateTask'),
+                    Uri.parse('${Endpoint.baseUrl}/task/updateTask'),
                     body: {
                       'taskName': pTaskName.text,
                       'taskDesc': pTaskDesc.text,

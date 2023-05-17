@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:task_management/models/project_task.dart';
 import 'package:task_management/views/project/addprojecttask.dart';
 import 'package:task_management/views/project/projecttaskprogresspage.dart';
 
-import '../../model/model.dart';
 import '../../model/repo.dart';
 
 class ProjectTaskListPage extends StatefulWidget {

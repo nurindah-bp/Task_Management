@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_management/model/utils.dart';
+import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/views/homepage.dart';
 import 'package:task_management/views/navbarpage.dart';
 import 'package:dio/dio.dart';
@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     final String password = passwordController.text;
 
     final response = await http.post(
-      Uri.parse('${Utils.baseUrl}/auth/login'),
+      Uri.parse('${Endpoint.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'nip': nip, 'password': password}),
     );
@@ -284,7 +284,7 @@ class _LoginPageState extends State<LoginPage> {
 //       Response response;
 //       var dio = Dio();
 //       response = await dio.post(
-//         '${Utils.baseUrl}/login',
+//         '${Endpoint.baseUrl}/login',
 //         data: {'nip': nip, 'password': password},
 //         options: Options(contentType: Headers.jsonContentType),
 //       );

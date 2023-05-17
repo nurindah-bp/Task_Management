@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:task_management/model/model.dart';
 import 'package:task_management/model/repo.dart';
 import 'package:http/http.dart' as http;
+import 'package:task_management/models/project_task.dart';
+import 'package:task_management/models/project_task_progress.dart';
+import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/views/project/updateprojecttask.dart';
-import '../../model/utils.dart';
 
 class projecttaskprogresspage extends StatefulWidget {
   final String projectTaskId;
@@ -59,6 +60,7 @@ class _projecttaskprogresspageState extends State<projecttaskprogresspage> {
     String projTaskId = widget.projectTaskId;
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text('Detail Tugas Proyek'),
           automaticallyImplyLeading: true,
@@ -140,7 +142,7 @@ class _projecttaskprogresspageState extends State<projecttaskprogresspage> {
                 child: MaterialButton(
                   onPressed: () async {
                     var myResponse = await http.post(
-                      Uri.parse('${Utils.baseUrl}/project/addProjTaskProgress'),
+                      Uri.parse('${Endpoint.baseUrl}/project/addProjTaskProgress'),
                       body: {
                         'projTaskProgress': ptaskProgress.text,
                         'projTaskProgressNote': ptaskNote.text,

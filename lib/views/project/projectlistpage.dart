@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:task_management/model/repo.dart';
-import 'package:task_management/model/model.dart';
+import 'package:task_management/models/project.dart';
 import 'package:task_management/views/project/addproject.dart';
 import 'package:task_management/views/project/projecttasklistpage.dart';
 

@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:date_field/date_field.dart';
-import '../../model/utils.dart';
+import 'package:task_management/utils/endpoint.dart';
+import 'package:task_management/utils/endpoint.dart';
+import 'package:task_management/utils/session_manager.dart';
 
 class AddProject extends StatefulWidget {
   // const AddProject({super.key});
@@ -35,7 +37,7 @@ class _AddProjectState extends State<AddProject> {
   }
 
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('${Utils.baseUrl}/employee/'));
+    final response = await http.get(Uri.parse('${Endpoint.baseUrl}/employee/'));
     if (response.statusCode == 200) {
       setState(() {
         _data = json.decode(response.body);
@@ -140,7 +142,7 @@ class _AddProjectState extends State<AddProject> {
               child: MaterialButton(
                 onPressed: () async {
                   var myResponse = await http.post(
-                    Uri.parse('${Utils.baseUrl}/project/addProj'),
+                    Uri.parse('${Endpoint.baseUrl}/project/addProj'),
                     body: {
                       'projDiv': projDiv,
                       'projName': pName.text,

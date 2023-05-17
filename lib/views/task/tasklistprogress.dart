@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:task_management/model/model.dart';
 import 'package:task_management/model/repo.dart';
+import 'package:task_management/models/task.dart';
+import 'package:task_management/models/task_progress.dart';
+import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/views/task/updatetask.dart';
-
-import '../../model/utils.dart';
 
 class TaskListProgress extends StatefulWidget {
   final taskId;
@@ -135,7 +135,7 @@ class _TaskListProgressState extends State<TaskListProgress> {
               child: MaterialButton(
                 onPressed: () async {
                   var myResponse = await http.post(
-                    Uri.parse('${Utils.baseUrl}/task/addTaskProgress'),
+                    Uri.parse('${Endpoint.baseUrl}/task/addTaskProgress'),
                     body: {
                       'taskProgress': ctaskProgress.text,
                       'taskProgressNote': ctaskNote.text,
