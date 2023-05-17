@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:task_management/model/repo.dart';
 import 'package:task_management/models/project.dart';
@@ -8,8 +6,8 @@ import 'package:task_management/views/project/projecttasklistpage.dart';
 
 class ProjectListPage extends StatefulWidget {
   final String projectDivId;
-  const ProjectListPage({Key? key, required this.projectDivId})
-      : super(key: key);
+
+  const ProjectListPage({Key? key, required this.projectDivId}) : super(key: key);
 
   @override
   State<ProjectListPage> createState() => _ProjectListPageState();
@@ -22,9 +20,10 @@ class _ProjectListPageState extends State<ProjectListPage> {
   projectListRepo repository = projectListRepo();
   projectListRepo2 repository2 = projectListRepo2();
   projectListRepo3 repository3 = projectListRepo3();
-  var loading = false;
+  bool loading = false;
 
-  Future<Null> getData() async {
+  Future getData() async {
+    print("GET DATA LIST PROJECT");
     listProject = await repository.getData(widget.projectDivId);
     listProject2 = await repository2.getData(widget.projectDivId);
     listProject3 = await repository3.getData(widget.projectDivId);
@@ -59,9 +58,10 @@ class _ProjectListPageState extends State<ProjectListPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => AddProject(
-                            projectDivId: projDivId,
-                          )),
+                    builder: (context) => AddProject(
+                      projectDivId: projDivId,
+                    ),
+                  ),
                 );
               },
             )
@@ -116,7 +116,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ProjectTaskListPage(
-                                  projectId: listProject[index].projectId,
+                                  projectId: listProject[index].projectId.toString(),
                                 )));
                   },
                 );
@@ -130,8 +130,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   isThreeLine: true,
-                  shape:
-                      Border(left: BorderSide(color: Colors.yellow, width: 5)),
+                  shape: Border(left: BorderSide(color: Colors.yellow, width: 5)),
                   title: Text(
                     listProject3[index].projectName,
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -158,11 +157,13 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   ),
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProjectTaskListPage(
-                                  projectId: listProject3[index].projectId,
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProjectTaskListPage(
+                          projectId: listProject3[index].projectId.toString(),
+                        ),
+                      ),
+                    );
                   },
                 );
               },
@@ -175,8 +176,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   isThreeLine: true,
-                  shape:
-                      Border(left: BorderSide(color: Colors.green, width: 5)),
+                  shape: Border(left: BorderSide(color: Colors.green, width: 5)),
                   title: Text(
                     listProject2[index].projectName,
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -206,7 +206,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ProjectTaskListPage(
-                                  projectId: listProject2[index].projectId,
+                                  projectId: listProject2[index].projectId.toString(),
                                 )));
                   },
                 );

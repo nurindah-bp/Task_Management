@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:task_management/model/repo.dart';
-import 'package:task_management/models/dash_procastination.dart';
-import 'package:task_management/utils/session_manager.dart';
+import 'package:get/get.dart';
+import 'package:task_management/controllers/auth_controller.dart';
+import 'package:task_management/controllers/procastionation_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,28 +11,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _sessionValue = '';
-  late List<DashProcastination> dataProkastinasi;
-  final Procastination _dataProkastinasi = Procastination();
+  final ProcastinationController procastinationController = Get.find<ProcastinationController>();
+  final AuthController authController = Get.find<AuthController>();
+
   bool isLoading = true;
 
   @override
   void initState() {
-    // _getSession();
-    dataProkastinasi = [];
     loadData();
     super.initState();
-    SessionManager.getSession().then((value) {
-      setState(() {
-        _sessionValue = value.split('-')[1];
-      });
-    });
   }
 
-  Future<void> loadData() async {
-    dataProkastinasi = await _dataProkastinasi.getData();
+  void loadData() async {
+    await procastinationController.getData();
     setState(() {
-      // dataProkastinasi = result;
       isLoading = false;
     });
   }
@@ -49,26 +41,24 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 Flexible(
                   flex: 0,
-                  child: Icon(Icons.account_circle,
-                      size: 60, color: Colors.blueAccent),
+                  child: Icon(Icons.account_circle, size: 60, color: Colors.blueAccent),
                 ),
                 Flexible(
                   flex: 1,
                   child: Container(
-                    margin: const EdgeInsets.only(
-                        top: 20, left: 10, right: 20, bottom: 20),
+                    margin: const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 20),
                     padding: const EdgeInsets.all(12),
                     width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xff0693e3)),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Text(
-                      'Hi! $_sessionValue',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        height: 1.2125,
-                        color: Color(0xff000000),
+                    decoration: BoxDecoration(border: Border.all(color: Color(0xff0693e3)), borderRadius: BorderRadius.circular(10)),
+                    child: Obx(
+                      () => Text(
+                        'Hi! ${authController.currentUser.value?.username}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          height: 1.2125,
+                          color: Color(0xff000000),
+                        ),
                       ),
                     ),
                   ),

@@ -1,13 +1,7 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_management/utils/endpoint.dart';
-import 'package:task_management/views/homepage.dart';
+import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/views/navbarpage.dart';
-import 'package:dio/dio.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,11 +11,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // find dependecy injection
+  final AuthController authController = Get.find<AuthController>();
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final nipController = TextEditingController();
   final passwordController = TextEditingController();
-  late bool obscureText;
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool obscureText = true;
   bool _isLoading = false;
 
   Future<void> _login() async {
@@ -32,26 +29,11 @@ class _LoginPageState extends State<LoginPage> {
     final String nip = nipController.text;
     final String password = passwordController.text;
 
-    final response = await http.post(
-      Uri.parse('${Endpoint.baseUrl}/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'nip': nip, 'password': password}),
-    );
+    bool responseLogin = await authController.login(nip: nip, password: password);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      // menyimpan session ke shared preferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('user_id', data['user_id']);
-      await prefs.setString('username', data['username']);
-      await prefs.setString('employee_name', data['pegawai']['employee_name']);
-      await prefs.setInt('position_id', data['pegawai']['position_id']);
-      await prefs.setInt('division_id', data['pegawai']['division_id']);
-
-      // Navigator.pushReplacementNamed(context, '/home');
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const NavbarPage()));
+    if (responseLogin) {
+      // replace page login dengan navbar
+      Get.off(() => const NavbarPage());
     } else {
       showDialog(
         context: context,
@@ -70,12 +52,6 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _isLoading = false;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    obscureText = true;
   }
 
   @override
@@ -114,17 +90,14 @@ class _LoginPageState extends State<LoginPage> {
                             children: <Widget>[
                               Material(
                                 color: Colors.white,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(15)),
+                                borderRadius: const BorderRadius.all(Radius.circular(15)),
                                 elevation: 2,
                                 child: AspectRatio(
                                   aspectRatio: 7 / 1,
                                   child: Center(
                                     child: TextFormField(
                                       decoration: const InputDecoration(
-                                          hintText: 'Nomor Induk Pegawai',
-                                          border: InputBorder.none,
-                                          contentPadding: EdgeInsets.all(8)),
+                                          hintText: 'Nomor Induk Pegawai', border: InputBorder.none, contentPadding: EdgeInsets.all(8)),
                                       controller: nipController,
                                       keyboardType: TextInputType.number,
                                     ),
@@ -135,36 +108,27 @@ class _LoginPageState extends State<LoginPage> {
                                   margin: const EdgeInsets.only(top: 16),
                                   child: Material(
                                       color: Colors.white,
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(15)),
+                                      borderRadius: const BorderRadius.all(Radius.circular(15)),
                                       elevation: 2,
                                       child: Row(
                                         children: <Widget>[
                                           Expanded(
                                             child: AspectRatio(
-                                                aspectRatio: 7 / 1,
-                                                child: Center(
-                                                    child: TextFormField(
-                                                  decoration:
-                                                      const InputDecoration(
-                                                          hintText: 'Password',
-                                                          border:
-                                                              InputBorder.none,
-                                                          contentPadding:
-                                                              EdgeInsets.all(
-                                                                  8)),
-                                                  controller:
-                                                      passwordController,
+                                              aspectRatio: 7 / 1,
+                                              child: Center(
+                                                child: TextFormField(
+                                                  decoration: const InputDecoration(
+                                                      hintText: 'Password', border: InputBorder.none, contentPadding: EdgeInsets.all(8)),
+                                                  controller: passwordController,
                                                   obscureText: obscureText,
-                                                ))),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                           IconButton(
                                             icon: Icon(
                                               Icons.remove_red_eye,
-                                              color: !obscureText
-                                                  ? Colors.black
-                                                      .withOpacity(0.3)
-                                                  : Colors.black,
+                                              color: !obscureText ? Colors.black.withOpacity(0.3) : Colors.black,
                                             ),
                                             onPressed: () {
                                               setState(() {
@@ -196,9 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                               // ),
                               ElevatedButton(
                                 onPressed: _isLoading ? null : _login,
-                                child: _isLoading
-                                    ? CircularProgressIndicator()
-                                    : Text('Login'),
+                                child: _isLoading ? CircularProgressIndicator() : Text('Login'),
                               ),
                             ],
                           )),

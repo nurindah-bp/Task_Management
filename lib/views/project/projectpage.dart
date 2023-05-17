@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:task_management/utils/endpoint.dart';
-import 'package:task_management/utils/endpoint.dart';
-import 'package:task_management/utils/session_manager.dart';
+import 'package:get/get.dart';
+import 'package:task_management/controllers/project_controller.dart';
 import 'package:task_management/views/project/projectlistpage.dart';
 
 class ProjectPage extends StatefulWidget {
@@ -15,41 +11,17 @@ class ProjectPage extends StatefulWidget {
 }
 
 class _ProjectPageState extends State<ProjectPage> {
-  String _sessionPositionID = '';
-  String _sessionDivID = '';
-  String url = "";
-  List<dynamic> _data = [];
+  final ProjectController projectController = Get.find<ProjectController>();
 
   @override
   void initState() {
     super.initState();
     fetchData();
-    SessionManager.getSession().then((value) {
-      setState(() {
-        _sessionPositionID = value.split('-')[2];
-        _sessionDivID = value.split('-')[3];
-      });
-    });
   }
 
   Future<void> fetchData() async {
-    String session = await SessionManager.getSession();
-    String sessionPositionId = session.split('-')[2];
-    String sessionDivId = session.split('-')[3];
-    String url;
-
-    if (sessionPositionId == '1') {
-      url = "${Endpoint.baseUrl}/employee/divisions";
-    } else {
-      url = "${Endpoint.baseUrl}/employee/division?division_id=$sessionDivId";
-    }
-    final response = await http.get(Uri.parse('${url}'));
-    if (response.statusCode == 200) {
-      setState(() {
-        _data = json.decode(response.body);
-      });
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
+    if (projectController.divisons.isEmpty) {
+      await projectController.getDivisions();
     }
   }
 
@@ -59,15 +31,15 @@ class _ProjectPageState extends State<ProjectPage> {
       appBar: AppBar(
         title: const Text('Project'),
       ),
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        itemCount: _data.length,
-        itemBuilder: (context, index) {
-          final item = _data[index];
-          return Container(
-            child: Card(
+      body: Obx(
+        () => GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          ),
+          itemCount: projectController.divisons.length,
+          itemBuilder: (context, index) {
+            final item = projectController.divisons[index];
+            return Card(
               margin: const EdgeInsets.all(10),
               shape: RoundedRectangleBorder(
                   side: BorderSide(
@@ -76,26 +48,21 @@ class _ProjectPageState extends State<ProjectPage> {
                   borderRadius: BorderRadius.circular(15.0)),
               child: InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProjectListPage(
-                                projectDivId: item['division_id'].toString(),
-                              )));
+                  Get.to(() => ProjectListPage(projectDivId: item.divisionId.toString()));
                 },
                 splashColor: Colors.blue,
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(item['division_name']),
+                      Text(item.divisionName),
                     ],
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
       // ListView.builder(
       //   itemCount: _data.length,
