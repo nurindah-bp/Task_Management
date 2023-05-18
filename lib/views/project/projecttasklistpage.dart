@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/models/project_task.dart';
 import 'package:task_management/views/project/addprojecttask.dart';
 import 'package:task_management/views/project/projecttaskprogresspage.dart';
@@ -10,14 +12,15 @@ import '../../model/repo.dart';
 class ProjectTaskListPage extends StatefulWidget {
   // // const ProjectTaskListPage(String params, {super.key});
   final String projectId;
-  const ProjectTaskListPage({Key? key, required this.projectId})
-      : super(key: key);
+
+  const ProjectTaskListPage({Key? key, required this.projectId}) : super(key: key);
 
   @override
   State<ProjectTaskListPage> createState() => _ProjectTaskListPageState();
 }
 
 class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
+  final AuthController authController = Get.find<AuthController>();
   List<ProjectTask> activeProjectTask = [];
   List<ProjectTask> pendingProjectTask = [];
   List<ProjectTask> doneProjectTask = [];
@@ -55,11 +58,12 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
               ),
               onPressed: () {
 // do something
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddProjectTask()),
-                );
+                if (authController.currentUser.value?.positionId.toString() == '2') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AddProjectTask()),
+                  );
+                }
               },
             )
           ],
@@ -83,8 +87,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     isThreeLine: true,
-                    shape:
-                        Border(left: BorderSide(color: Colors.red, width: 5)),
+                    shape: Border(left: BorderSide(color: Colors.red, width: 5)),
                     title: Text(
                       activeProjectTask[index].ptaskName,
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -103,21 +106,21 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                             Icon(Icons.account_circle),
                             SizedBox(width: 6),
                             Text(
-                              activeProjectTask[index]
-                                  .employeeName
-                                  .employeeName,
+                              activeProjectTask[index].employeeName.employeeName,
                             ),
                           ],
                         )
                       ],
                     ),
                     onTap: () {
-                      Navigator.push(
+                      if (authController.currentUser.value?.positionId.toString() != '1') {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => projecttaskprogresspage(
-                                  projectTaskId:
-                                      activeProjectTask[index].ptaskId)));
+                            builder: (context) => projecttaskprogresspage(projectTaskId: activeProjectTask[index].ptaskId),
+                          ),
+                        );
+                      }
                     },
                   );
                 },
@@ -129,8 +132,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                       isThreeLine: true,
-                      shape: Border(
-                          left: BorderSide(color: Colors.yellow, width: 5)),
+                      shape: Border(left: BorderSide(color: Colors.yellow, width: 5)),
                       title: Text(
                         pendingProjectTask[index].ptaskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -149,9 +151,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                pendingProjectTask[index]
-                                    .employeeName
-                                    .employeeName,
+                                pendingProjectTask[index].employeeName.employeeName,
                               ),
                             ],
                           )
@@ -166,8 +166,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                       isThreeLine: true,
-                      shape: Border(
-                          left: BorderSide(color: Colors.green, width: 5)),
+                      shape: Border(left: BorderSide(color: Colors.green, width: 5)),
                       title: Text(
                         doneProjectTask[index].ptaskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -186,9 +185,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                doneProjectTask[index]
-                                    .employeeName
-                                    .employeeName,
+                                doneProjectTask[index].employeeName.employeeName,
                               ),
                             ],
                           )

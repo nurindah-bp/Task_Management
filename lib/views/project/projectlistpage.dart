@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/model/repo.dart';
 import 'package:task_management/models/project.dart';
 import 'package:task_management/views/project/addproject.dart';
@@ -14,6 +16,7 @@ class ProjectListPage extends StatefulWidget {
 }
 
 class _ProjectListPageState extends State<ProjectListPage> {
+  final AuthController authController = Get.find<AuthController>();
   List<Project> listProject = [];
   List<Project> listProject2 = [];
   List<Project> listProject3 = [];
@@ -55,14 +58,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
               ),
               onPressed: () {
 // do something
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddProject(
-                      projectDivId: projDivId,
+                if (authController.currentUser.value?.positionId.toString() == '2') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddProject(
+                        projectDivId: projDivId,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
               },
             )
           ],
