@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/utils/session_manager.dart';
@@ -14,6 +16,7 @@ class AddTask extends StatefulWidget {
 }
 
 class _AddTaskState extends State<AddTask> {
+  final AuthController authController = Get.find<AuthController>();
   String _sessionId = '';
   List _data = [];
   int _pic = 1;
@@ -152,7 +155,7 @@ class _AddTaskState extends State<AddTask> {
                       'taskPIC': _pic.toString(),
                       'taskDeadline': selectedDate.toString(),
                       'taskUrgent': '0',
-                      'userID': _sessionId,
+                      'userID': authController.currentUser.value?.userId.toString(),
                     },
                   );
                   print(myResponse.body);

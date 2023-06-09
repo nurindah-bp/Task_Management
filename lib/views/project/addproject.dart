@@ -1,8 +1,9 @@
 import 'dart:convert';
-
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:date_field/date_field.dart';
+import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/utils/session_manager.dart';
@@ -17,6 +18,7 @@ class AddProject extends StatefulWidget {
 }
 
 class _AddProjectState extends State<AddProject> {
+  final AuthController authController = Get.find<AuthController>();
   String _sessionId = '';
   List _data = [];
   int _value = 1;
@@ -149,7 +151,8 @@ class _AddProjectState extends State<AddProject> {
                       'projDesc': pDesc.text,
                       'projPIC': _value.toString(),
                       'projDeadline': selectedDate.toString(),
-                      'userID': _sessionId,
+                      // 'userID': _sessionId,
+                      'userID': authController.currentUser.value?.userId.toString(),
                     },
                   );
                   print(myResponse.body);

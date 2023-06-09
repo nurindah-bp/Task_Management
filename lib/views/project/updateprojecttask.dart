@@ -1,10 +1,11 @@
 import 'dart:convert';
-
+import 'package:get/get.dart';
 import 'package:date_field/date_field.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/models/project_task.dart';
 import 'package:task_management/utils/endpoint.dart';
 import 'package:task_management/utils/endpoint.dart';
@@ -23,6 +24,7 @@ class UpdateProjectTask extends StatefulWidget {
 }
 
 class _UpdateProjectTaskState extends State<UpdateProjectTask> {
+  final AuthController authController = Get.find<AuthController>();
   List<ProjectTask> detilTask = [];
   projecttaskDetil detail = projecttaskDetil();
   List _data = [];
@@ -202,7 +204,8 @@ class _UpdateProjectTaskState extends State<UpdateProjectTask> {
                       'projTaskPIC': _pic.toString(),
                       'projTaskDeadline': selectedDate.toString(),
                       'projTaskUrgent': '0',
-                      'userID': _sessionId,
+                      // 'userID': _sessionId,
+                      'userID': authController.currentUser.value?.userId.toString(),
                       'projTaskID': projTaskId,
                     },
                   );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/views/home/homepage.dart';
+import 'package:task_management/views/home/homepage_kadiv.dart';
 import 'package:task_management/views/profile/profilepage.dart';
 import 'package:task_management/views/project/projectpage.dart';
 import 'package:task_management/views/task/tasklistpage.dart';
@@ -12,11 +15,18 @@ class NavbarPage extends StatefulWidget {
 }
 
 class _NavbarPageState extends State<NavbarPage> {
+  final AuthController authController = Get.find<AuthController>();
   int _selectedTabIndex = 0;
+  // var dashPage;
 
   void _onNavBarTapped(int index) {
     setState(() {
       _selectedTabIndex = index;
+      // if(authController.currentUser.value?.positionId == 1) {
+      //   dashPage = HomePage();
+      // }else{
+      //   dashPage = HomePageKadiv();
+      // }
     });
   }
 
@@ -24,6 +34,10 @@ class _NavbarPageState extends State<NavbarPage> {
   Widget build(BuildContext context) {
     final _listPage = <Widget>[
       HomePage(),
+      // if (authController.currentUser.value?.positionId == 1)
+      //   HomePage()
+      // else
+      //   HomePageKadiv(),
       ProjectPage(),
       TaskListPage(),
       ProfilePage(),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_management/controllers/auth_controller.dart';
+import 'package:task_management/controllers/project_controller.dart';
 import 'package:task_management/views/auth/login_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -12,6 +15,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final ProjectController projectController = Get.find<ProjectController>();
+  final AuthController authController = Get.find<AuthController>();
   final nipController = TextEditingController();
   final oldpasswordController = TextEditingController();
   final newpasswordController = TextEditingController();
@@ -70,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   //   keyboardType: TextInputType.number,
                   // ),
                   child: Text(
-                    '$_sessionValue',
+                    '${authController.currentUser.value?.employeeName}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -183,11 +188,14 @@ class _ProfilePageState extends State<ProfilePage> {
               child: MaterialButton(
                 onPressed: () async {
                   // loginValidation(context);
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  prefs.remove('user_id');
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const LoginPage()));
+                  // SharedPreferences prefs =
+                  //     await SharedPreferences.getInstance();
+                  // prefs.remove('user_id');
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //     builder: (context) => const LoginPage()));
+                  projectController.divisons = RxList();
+                  authController.currentUser = Rxn();
+                  Get.to(()=>LoginPage());
                 },
                 child: const Text("Keluar",
                     style: TextStyle(

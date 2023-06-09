@@ -118,11 +118,13 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   ),
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProjectTaskListPage(
-                                  projectId: listProject[index].projectId.toString(),
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProjectTaskListPage(
+                          projectId: listProject[index].projectId.toString(),
+                        ),
+                      ),
+                    );
                   },
                 );
               },
