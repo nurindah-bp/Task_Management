@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:get/get.dart';
 import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/model/repo.dart';
@@ -24,12 +25,35 @@ class _ProjectListPageState extends State<ProjectListPage> {
   projectListRepo2 repository2 = projectListRepo2();
   projectListRepo3 repository3 = projectListRepo3();
   bool loading = false;
+  TextEditingController searchController = TextEditingController();
 
-  Future getData() async {
+
+  Future<void> getData() async {
     print("GET DATA LIST PROJECT");
     listProject = await repository.getData(widget.projectDivId);
     listProject2 = await repository2.getData(widget.projectDivId);
     listProject3 = await repository3.getData(widget.projectDivId);
+    setState(() {});
+    loading = true;
+  }
+
+  List<Project> searchResults = [];
+
+  Future<void> getProjects(String searchText) async {
+    print("GET DATA LIST PROJECT");
+    listProject = await repository.getData(widget.projectDivId);
+    listProject2 = await repository2.getData(widget.projectDivId);
+    listProject3 = await repository3.getData(widget.projectDivId);
+
+    if (searchText.isNotEmpty) {
+      searchResults = listProject
+          .where((project) =>
+          project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.projectName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    } else {
+      searchResults = [];
+    }
+
     setState(() {});
     loading = true;
   }
@@ -48,7 +72,14 @@ class _ProjectListPageState extends State<ProjectListPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Daftar Project'),
+          title: AnimatedSearchBar(
+            label: "Search Something Here",
+            onChanged: (value) {
+              setState(() {
+                getProjects(value);
+              });
+            },
+          ),
           automaticallyImplyLeading: true,
           actions: <Widget>[
             IconButton(
@@ -88,14 +119,15 @@ class _ProjectListPageState extends State<ProjectListPage> {
         body: TabBarView(
           children: <Widget>[
             ListView.separated(
-              itemCount: listProject != null ? listProject.length : 0,
+              itemCount: searchResults.isNotEmpty ? searchResults.length : listProject.length,
               itemBuilder: (context, index) {
                 // final int params = listProject[index].id_proyek;
+                final Project project = searchResults.isNotEmpty ? searchResults[index] : listProject[index];
                 return ListTile(
                   isThreeLine: true,
                   shape: Border(left: BorderSide(color: Colors.red, width: 5)),
                   title: Text(
-                    listProject[index].projectName,
+                    project.projectName,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
@@ -105,13 +137,13 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         height: 6,
                       ),
                       Text(
-                        listProject[index].projectDescription,
+                        project.projectDescription,
                       ),
                       Row(
                         children: <Widget>[
                           Icon(Icons.account_circle),
                           SizedBox(width: 6),
-                          Text(listProject[index].employeeName.employeeName),
+                          Text(project.employeeName.employeeName),
                         ],
                       )
                     ],
@@ -121,7 +153,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProjectTaskListPage(
-                          projectId: listProject[index].projectId.toString(),
+                          projectId: project.projectId.toString(),
                         ),
                       ),
                     );

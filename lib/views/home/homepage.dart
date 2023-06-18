@@ -4,6 +4,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/controllers/procastionation_controller.dart';
 import 'package:task_management/models/dash_procastination.dart';
+import 'package:task_management/models/task_resume.dart';
+import 'package:searchbar_animation/searchbar_animation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ProcastinationController procastinationController = Get.find<ProcastinationController>();
   final AuthController authController = Get.find<AuthController>();
+  RxList<TaskResume> dataResumeTask = RxList<TaskResume>();
 
   bool isLoading = true;
 
@@ -27,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   void loadData() async {
     await procastinationController.getData();
     await procastinationController.getDataProductivity();
+    await procastinationController.getDataResumeTask();
     setState(() {
       isLoading = false;
     });
@@ -45,7 +49,7 @@ class _HomePageState extends State<HomePage> {
   Widget buildKabid() {
     return Column(
       children: [
-        ResumeKabidTask(),
+        ResumeKabidTask(controller: procastinationController),
         SizedBox(height: 20),
         ResumeEmployeesTask(),
         SizedBox(height: 20),
@@ -255,8 +259,10 @@ class ProductivityChart extends StatelessWidget {
 }
 
 class ResumeKabidTask extends StatelessWidget {
+  final ProcastinationController controller;
 
-  const ResumeKabidTask({super.key}) ;
+  const ResumeKabidTask({Key? key, required this.controller}) : super(key: key);
+  // const ResumeKabidTask({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -287,7 +293,8 @@ class ResumeKabidTask extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '10',
+                        controller.dataResumeTask[0].progress,
+                        // '10',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -305,13 +312,14 @@ class ResumeKabidTask extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '2',
+                        controller.dataResumeTask[0].pending,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -335,7 +343,7 @@ class ResumeKabidTask extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '7',
+                        controller.dataResumeTask[0].done,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

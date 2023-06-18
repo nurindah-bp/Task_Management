@@ -1,3 +1,4 @@
+import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -27,12 +28,60 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
   activeProjectTaskRepo active = activeProjectTaskRepo();
   pendingProjectTaskRepo pending = pendingProjectTaskRepo();
   doneProjectTaskRepo done = doneProjectTaskRepo();
+  bool loading = false;
+  TextEditingController searchController = TextEditingController();
 
-  getData() async {
+  // getData() async {
+  //   activeProjectTask = await active.getData(widget.projectId);
+  //   pendingProjectTask = await pending.getData(widget.projectId);
+  //   doneProjectTask = await done.getData(widget.projectId);
+  //   setState(() {});
+  // }
+
+  Future<void> getData() async {
     activeProjectTask = await active.getData(widget.projectId);
     pendingProjectTask = await pending.getData(widget.projectId);
     doneProjectTask = await done.getData(widget.projectId);
     setState(() {});
+  }
+
+  List<ProjectTask> searchResults = [];
+
+  Future<void> getPTasks(String searchText) async {
+    print("GET DATA LIST PROJECT");
+    activeProjectTask = await active.getData(widget.projectId);
+    pendingProjectTask = await pending.getData(widget.projectId);
+    doneProjectTask = await done.getData(widget.projectId);
+
+    if (searchText.isNotEmpty) {
+      searchResults = activeProjectTask
+          .where((ptask) =>
+      ptask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || ptask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    } else {
+      searchResults = [];
+    }
+
+    if (searchText.isNotEmpty) {
+      searchResults = pendingProjectTask
+          .where((project) =>
+      project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    } else {
+      searchResults = [];
+    }
+
+    if (searchText.isNotEmpty) {
+      searchResults = doneProjectTask
+          .where((project) =>
+      project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    } else {
+      searchResults = [];
+    }
+
+    setState(() {});
+    loading = true;
   }
 
   @override
@@ -48,7 +97,15 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Daftar Tugas Proyek'),
+          // title: const Text('Daftar Tugas Proyek')
+          title: AnimatedSearchBar(
+                      label: "Search Something Here",
+                      onChanged: (value) {
+                        setState(() {
+                          getPTasks(value);
+                        });
+                      },
+                    ),
           automaticallyImplyLeading: true,
           actions: <Widget>[
             IconButton(
@@ -84,12 +141,15 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
         body: TabBarView(
           children: <Widget>[
             ListView.separated(
+                itemCount: searchResults.isNotEmpty ? searchResults.length : activeProjectTask.length,
                 itemBuilder: (context, index) {
+                  final ProjectTask ptask = searchResults.isNotEmpty ? searchResults[index] : activeProjectTask[index];
                   return ListTile(
                     isThreeLine: true,
                     shape: Border(left: BorderSide(color: Colors.red, width: 5)),
                     title: Text(
-                      activeProjectTask[index].ptaskName,
+                      // activeProjectTask[index].ptaskName,
+                      ptask.ptaskName,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
@@ -99,7 +159,8 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                           height: 6,
                         ),
                         Text(
-                          activeProjectTask[index].ptaskDescription,
+                          // activeProjectTask[index].ptaskDescription,
+                          ptask.ptaskDescription,
                         ),
                         Row(
                           children: <Widget>[
@@ -127,14 +188,18 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: activeProjectTask.length),
+                // itemCount: activeProjectTask.length
+            ),
             ListView.separated(
+                itemCount: searchResults.isNotEmpty ? searchResults.length : pendingProjectTask.length,
                 itemBuilder: (context, index) {
+                  final ProjectTask pTask = searchResults.isNotEmpty ? searchResults[index] : pendingProjectTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(left: BorderSide(color: Colors.yellow, width: 5)),
                       title: Text(
-                        pendingProjectTask[index].ptaskName,
+                        // pendingProjectTask[index].ptaskName,
+                        pTask.ptaskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
@@ -144,7 +209,8 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                             height: 6,
                           ),
                           Text(
-                            pendingProjectTask[index].ptaskDescription,
+                            // pendingProjectTask[index].ptaskDescription,
+                            pTask.ptaskDescription,
                           ),
                           Row(
                             children: <Widget>[
@@ -161,14 +227,18 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: pendingProjectTask.length),
+                // itemCount: pendingProjectTask.length
+            ),
             ListView.separated(
+                itemCount: searchResults.isNotEmpty ? searchResults.length : doneProjectTask.length,
                 itemBuilder: (context, index) {
+                  final ProjectTask pTask = searchResults.isNotEmpty ? searchResults[index] : doneProjectTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(left: BorderSide(color: Colors.green, width: 5)),
                       title: Text(
-                        doneProjectTask[index].ptaskName,
+                        // doneProjectTask[index].ptaskName,
+                        pTask.ptaskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
@@ -178,7 +248,8 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                             height: 6,
                           ),
                           Text(
-                            doneProjectTask[index].ptaskDescription,
+                            // doneProjectTask[index].ptaskDescription,
+                            pTask.ptaskDescription,
                           ),
                           Row(
                             children: <Widget>[
@@ -195,7 +266,8 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: doneProjectTask.length),
+                // itemCount: doneProjectTask.length
+            ),
           ],
         ),
       ),

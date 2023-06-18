@@ -1,3 +1,4 @@
+import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -20,12 +21,62 @@ class _TaskListPageState extends State<TaskListPage> {
   activeTaskRepo active = activeTaskRepo();
   pendingTaskRepo pending = pendingTaskRepo();
   doneTaskRepo done = doneTaskRepo();
+  bool loading = false;
+  TextEditingController searchController = TextEditingController();
 
-  getData() async {
+  // getData() async {
+  //   activeTask = await active.getData();
+  //   pendingTask = await pending.getData();
+  //   doneTask = await done.getData();
+  //   setState(() {});
+  // }
+
+  Future<void> getData() async {
+    // print("GET DATA LIST PROJECT");
+    activeTask = await active.getData();
+      pendingTask = await pending.getData();
+      doneTask = await done.getData();
+      setState(() {});
+    loading = true;
+  }
+
+  List<Task> searchResults = [];
+
+  Future<void> getTasks(String searchText) async {
+    // print("GET DATA LIST PROJECT");
     activeTask = await active.getData();
     pendingTask = await pending.getData();
     doneTask = await done.getData();
+
+    if (searchText.isNotEmpty) {
+      searchResults = activeTask
+          .where((task) =>
+      task.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || task.taskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    } else {
+      searchResults = [];
+    }
+
+    if (searchText.isNotEmpty) {
+      searchResults = pendingTask
+          .where((task) =>
+      task.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || task.taskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    } else {
+      searchResults = [];
+    }
+
+    if (searchText.isNotEmpty) {
+      searchResults = doneTask
+          .where((task) =>
+      task.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || task.taskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    } else {
+      searchResults = [];
+    }
+
     setState(() {});
+    loading = true;
   }
 
   @override
@@ -41,7 +92,15 @@ class _TaskListPageState extends State<TaskListPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Daftar Tugas'),
+          // title: const Text('Daftar Tugas'),
+          title: AnimatedSearchBar(
+            label: "Search Something Here",
+            onChanged: (value) {
+              setState(() {
+                getTasks(value);
+              });
+            },
+          ),
           automaticallyImplyLeading: true,
           actions: <Widget>[
             IconButton(
@@ -75,13 +134,16 @@ class _TaskListPageState extends State<TaskListPage> {
         body: TabBarView(
           children: <Widget>[
             ListView.separated(
+                itemCount: searchResults.isNotEmpty ? searchResults.length : activeTask.length,
                 itemBuilder: (context, index) {
+                  final Task task = searchResults.isNotEmpty ? searchResults[index] : activeTask[index];
                   return ListTile(
                     isThreeLine: true,
                     shape:
                         Border(left: BorderSide(color: Colors.red, width: 5)),
                     title: Text(
-                      activeTask[index].taskName,
+                      // activeTask[index].taskName,
+                      task.taskName,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
@@ -91,7 +153,8 @@ class _TaskListPageState extends State<TaskListPage> {
                           height: 6,
                         ),
                         Text(
-                          activeTask[index].taskDescription,
+                          // activeTask[index].taskDescription,
+                          task.taskDescription,
                         ),
                         Row(
                           children: <Widget>[
@@ -116,15 +179,19 @@ class _TaskListPageState extends State<TaskListPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: activeTask.length),
+                // itemCount: activeTask.length
+            ),
             ListView.separated(
+                itemCount: searchResults.isNotEmpty ? searchResults.length : pendingTask.length,
                 itemBuilder: (context, index) {
+                  final Task task = searchResults.isNotEmpty ? searchResults[index] : pendingTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(
                           left: BorderSide(color: Colors.yellow, width: 5)),
                       title: Text(
-                        pendingTask[index].taskName,
+                        // pendingTask[index].taskName,
+                        task.taskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
@@ -134,7 +201,8 @@ class _TaskListPageState extends State<TaskListPage> {
                             height: 6,
                           ),
                           Text(
-                            pendingTask[index].taskDescription,
+                            // pendingTask[index].taskDescription,
+                            task.taskDescription,
                           ),
                           Row(
                             children: <Widget>[
@@ -151,15 +219,19 @@ class _TaskListPageState extends State<TaskListPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: pendingTask.length),
+                // itemCount: pendingTask.length
+            ),
             ListView.separated(
+                itemCount: searchResults.isNotEmpty ? searchResults.length : doneTask.length,
                 itemBuilder: (context, index) {
+                  final Task task = searchResults.isNotEmpty ? searchResults[index] : doneTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(
                           left: BorderSide(color: Colors.green, width: 5)),
                       title: Text(
-                        doneTask[index].taskName,
+                        // doneTask[index].taskName,
+                        task.taskName,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
@@ -169,7 +241,8 @@ class _TaskListPageState extends State<TaskListPage> {
                             height: 6,
                           ),
                           Text(
-                            doneTask[index].taskDescription,
+                            // doneTask[index].taskDescription,
+                            task.taskDescription,
                           ),
                           Row(
                             children: <Widget>[
@@ -186,7 +259,8 @@ class _TaskListPageState extends State<TaskListPage> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: doneTask.length),
+                // itemCount: doneTask.length
+            ),
           ],
         ),
       ),
