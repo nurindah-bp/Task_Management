@@ -23,21 +23,30 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    loadData();
     super.initState();
+    loadData();
   }
 
   void loadData() async {
     await procastinationController.getData();
     await procastinationController.getDataProductivity();
     await procastinationController.getDataResumeTask();
+    await procastinationController.getDataResumeTasks();
+    await procastinationController.getDataResumeProjectBid();
+    if (procastinationController.dataResumeAllProjects.isEmpty) {
+      await procastinationController.getDataResumeProjects();
+    }
+    // await procastinationController.getDataResumeProjects();
     setState(() {
       isLoading = false;
     });
   }
+
   Widget buildKepsek() {
     return Column(
       children: [
+        ResumeProjects(controller: procastinationController),
+        SizedBox(height: 20),
         ProcastinationChart(controller: procastinationController),
         SizedBox(height: 20),
         ProductivityChart(controller: procastinationController),
@@ -49,9 +58,11 @@ class _HomePageState extends State<HomePage> {
   Widget buildKabid() {
     return Column(
       children: [
+        ResumeProjectBid(controller: procastinationController),
+        SizedBox(height: 20),
         ResumeKabidTask(controller: procastinationController),
         SizedBox(height: 20),
-        ResumeEmployeesTask(),
+        ResumeEmployeesTask(controller: procastinationController),
         SizedBox(height: 20),
       ],
     );
@@ -60,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   Widget buildEmployee() {
     return Column(
       children: [
-        ResumeEmployeeTask(),
+        ResumeEmployeeTask(controller: procastinationController),
         SizedBox(height: 20),
       ],
     );
@@ -85,18 +96,22 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     margin: const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 20),
                     padding: const EdgeInsets.all(12),
-                    width: MediaQuery.of(context).size.width,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
                     decoration: BoxDecoration(border: Border.all(color: Color(0xff0693e3)), borderRadius: BorderRadius.circular(10)),
                     child: Obx(
-                      () => Text(
-                        'Hi! ${authController.currentUser.value?.employeeName}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          height: 1.2125,
-                          color: Color(0xff000000),
-                        ),
-                      ),
+                          () =>
+                          Text(
+                            'Hi! ${authController.currentUser.value?.employeeName}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              height: 1.2125,
+                              color: Color(0xff000000),
+                            ),
+                          ),
                     ),
                   ),
                 ),
@@ -118,10 +133,11 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   if (authController.currentUser.value?.positionId.toString() == '1')
                     buildKepsek()
-                  else if (authController.currentUser.value?.positionId.toString() == '2')
-                    buildKabid()
                   else
-                    buildEmployee(),
+                    if (authController.currentUser.value?.positionId.toString() == '2')
+                      buildKabid()
+                    else
+                      buildEmployee(),
                 ],
               ),
             ),
@@ -192,6 +208,84 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class ResumeProjects extends StatelessWidget {
+  final ProcastinationController controller;
+
+  const ResumeProjects({Key? key, required this.controller}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.fromLTRB(8.0, 15.0, 8.0, 15.0),
+            child: Text(
+              'Persentase Project',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.normal,
+              ), textAlign: TextAlign.center,
+            ),
+          ),
+          Obx(
+                () =>
+                GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4, // Number of columns in the grid
+                    mainAxisSpacing: 5.0, // Spacing between rows
+                    crossAxisSpacing: 5.0, // Spacing between columns
+                  ),
+
+                  itemCount: controller.dataResumeAllProjects.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // Build each item in the grid
+                    final ratio = double.parse(controller.dataResumeAllProjects[index].done) / double.parse(controller.dataResumeAllProjects[index].total) * 100;
+                    return Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15.0),
+                        border: Border.all(
+                          color: Colors.blueAccent
+                        )// Customize the color as needed
+                      ),
+                      child: Center(
+                          // child: Text(controller.dataResumeAllProjects[index].divName)
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              controller.dataResumeAllProjects[index].divName,
+                              // '10',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              ), textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              ratio.toString() + '%',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              ), textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(), // Disable scrolling of the GridView
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class ProcastinationChart extends StatelessWidget {
   final ProcastinationController controller;
 
@@ -203,21 +297,22 @@ class ProcastinationChart extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Obx(
-                () => SfCartesianChart(
-              title: ChartTitle(text: 'Tingkat Prokrastinasi Pegawai'),
-              // Initialize category axis
-              primaryXAxis: CategoryAxis(),
-              series: <BarSeries<DashProcastination, String>>[
-                BarSeries<DashProcastination, String>(
-                  color: Colors.blueAccent,
-                  // Bind data source
-                  dataSource: controller.dataProkastinasi.toList(),
-                  xValueMapper: (DashProcastination data, _) => data.employeeName,
-                  yValueMapper: (DashProcastination data, _) => data.prokastinasi,
-                  dataLabelSettings: DataLabelSettings(isVisible: true),
+                () =>
+                SfCartesianChart(
+                  title: ChartTitle(text: 'Tingkat Prokrastinasi Pegawai'),
+                  // Initialize category axis
+                  primaryXAxis: CategoryAxis(),
+                  series: <BarSeries<DashProcastination, String>>[
+                    BarSeries<DashProcastination, String>(
+                      color: Colors.blueAccent,
+                      // Bind data source
+                      dataSource: controller.dataProkastinasi.toList(),
+                      xValueMapper: (DashProcastination data, _) => data.employeeName,
+                      yValueMapper: (DashProcastination data, _) => data.prokastinasi,
+                      dataLabelSettings: DataLabelSettings(isVisible: true),
+                    ),
+                  ],
                 ),
-              ],
-            ),
           ),
         ],
       ),
@@ -236,21 +331,162 @@ class ProductivityChart extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Obx(
-                () => SfCartesianChart(
-              title: ChartTitle(text: 'Tingkat Produktivitas Pegawai'),
-              // Initialize category axis
-              primaryXAxis: CategoryAxis(),
-              series: <BarSeries<DashProcastination, String>>[
-                BarSeries<DashProcastination, String>(
-                  color: Colors.blueAccent,
-                  // Bind data source
-                  dataSource: controller.dataProduktivitas.toList(),
-                  xValueMapper: (DashProcastination data, _) => data.employeeName,
-                  yValueMapper: (DashProcastination data, _) => data.prokastinasi,
-                  dataLabelSettings: DataLabelSettings(isVisible: true),
+                () =>
+                SfCartesianChart(
+                  title: ChartTitle(text: 'Tingkat Produktivitas Pegawai'),
+                  // Initialize category axis
+                  primaryXAxis: CategoryAxis(),
+                  series: <BarSeries<DashProcastination, String>>[
+                    BarSeries<DashProcastination, String>(
+                      color: Colors.blueAccent,
+                      // Bind data source
+                      dataSource: controller.dataProduktivitas.toList(),
+                      xValueMapper: (DashProcastination data, _) => data.employeeName,
+                      yValueMapper: (DashProcastination data, _) => data.prokastinasi,
+                      dataLabelSettings: DataLabelSettings(isVisible: true),
+                    ),
+                  ],
                 ),
-              ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ResumeProjectBid extends StatelessWidget {
+  final ProcastinationController controller;
+
+  const ResumeProjectBid({Key? key, required this.controller}) : super(key: key);
+
+  // const ResumeKabidTask({super.key}) ;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blueAccent, width: 1.0),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.fromLTRB(8.0, 15.0, 8.0, 15.0),
+            child: Text(
+              'Resume Project ' + controller.dataResumeProjectBidang[0].divName,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ), textAlign: TextAlign.center,
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.dataResumeProjectBidang[0].nonprogress,
+                        // '10',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ), textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Belum Dikerjakan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
+                      ),
+
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.dataResumeProjectBidang[0].inprogress,
+                        // '10',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ), textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Sedang Dikerjakan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.dataResumeProjectBidang[0].pending,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Project Dipending',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ), Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.dataResumeProjectBidang[0].done,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ), textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Project Diselesaikan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -262,6 +498,7 @@ class ResumeKabidTask extends StatelessWidget {
   final ProcastinationController controller;
 
   const ResumeKabidTask({Key? key, required this.controller}) : super(key: key);
+
   // const ResumeKabidTask({super.key}) ;
 
   @override
@@ -281,7 +518,7 @@ class ResumeKabidTask extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ),
+              ), textAlign: TextAlign.center,
             ),
           ),
           Row(
@@ -293,21 +530,47 @@ class ResumeKabidTask extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        controller.dataResumeTask[0].progress,
+                        controller.dataResumeTask[0].nonprogress,
                         // '10',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Aktif',
+                        'Belum Dikerjakan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.dataResumeTask[0].inprogress,
+                        // '10',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ), textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Sedang Dikerjakan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -324,20 +587,20 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Pending',
+                        'Tugas Dipending',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ),Expanded(
+              ), Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -348,15 +611,15 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Selesai',
+                        'Tugas Diselesaikan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -369,9 +632,13 @@ class ResumeKabidTask extends StatelessWidget {
     );
   }
 }
-class ResumeEmployeesTask extends StatelessWidget {
 
-  const ResumeEmployeesTask({super.key}) ;
+class ResumeEmployeesTask extends StatelessWidget {
+  final ProcastinationController controller;
+
+  const ResumeEmployeesTask({Key? key, required this.controller}) : super(key: key);
+
+  // const ResumeEmployeesTask({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -386,11 +653,11 @@ class ResumeEmployeesTask extends StatelessWidget {
           Padding(
             padding: EdgeInsets.fromLTRB(8.0, 15.0, 8.0, 15.0),
             child: Text(
-              'Resume Tugas Karyawan per Bidang',
+              'Resume Tugas Harian Karyawan Bidang',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ),
+              ), textAlign: TextAlign.center,
             ),
           ),
           Row(
@@ -402,68 +669,93 @@ class ResumeEmployeesTask extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '5',
+                        controller.dataResumeTasks[0].nonprogress.isEmpty ? '0' : controller.dataResumeTasks[0].nonprogress,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Aktif',
+                        'Belum Dikerjakan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ),Expanded(
+              ), Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '1',
+                        controller.dataResumeTasks[0].inprogress.isEmpty ? '0' : controller.dataResumeTasks[0].inprogress,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ), textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Sedang Dikerjakan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.dataResumeTasks[0].pending.isEmpty ? '0' : controller.dataResumeTasks[0].pending,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Pending',
+                        'Tugas Dipending',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ),Expanded(
+              ), Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '10',
+                        controller.dataResumeTasks[0].done.isEmpty ? '0' : controller.dataResumeTasks[0].done,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Selesai',
+                        'Tugas Diselesaikan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -476,9 +768,13 @@ class ResumeEmployeesTask extends StatelessWidget {
     );
   }
 }
-class ResumeEmployeeTask extends StatelessWidget {
 
-  const ResumeEmployeeTask({super.key}) ;
+class ResumeEmployeeTask extends StatelessWidget {
+  final ProcastinationController controller;
+
+  const ResumeEmployeeTask({Key? key, required this.controller}) : super(key: key);
+
+  // const ResumeEmployeeTask({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -497,7 +793,7 @@ class ResumeEmployeeTask extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ),
+              ), textAlign: TextAlign.center,
             ),
           ),
           Row(
@@ -509,68 +805,92 @@ class ResumeEmployeeTask extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '5',
+                        controller.dataResumeTask[0].nonprogress,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Aktif',
+                        'Belum Dikerjakan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ),Expanded(
+              ), Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '1',
+                        controller.dataResumeTask[0].inprogress,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ), textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Sedang Dikerjakan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ), textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ), Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.dataResumeTask[0].pending,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Pending',
+                        'Tugas Dipending',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ),Expanded(
+              ), Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '10',
+                        controller.dataResumeTask[0].done,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                       Text(
-                        'Selesai',
+                        'Tugas Diselesaikan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ),
+                        ), textAlign: TextAlign.center,
                       ),
                     ],
                   ),
