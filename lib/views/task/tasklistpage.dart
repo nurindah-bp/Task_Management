@@ -36,15 +36,21 @@ class _TaskListPageState extends State<TaskListPage> {
 
   Future<void> getData() async {
     // print("GET DATA LIST PROJECT");
-    if (authController.currentUser.value?.positionId.toString() == '2') {
+    if (authController.currentUser.value?.positionId.toString() == '1' || authController.currentUser.value?.positionId.toString() == '2') {
       String paramValue = '2';
-      activeTask = await active.getData(paramValue);
+      final sessionId = authController.currentUser.value?.userId;
+      activeTask = await active.getData(paramValue, sessionId);
+      pendingTask = await pending.getData(paramValue, sessionId);
+      doneTask = await done.getData(paramValue, sessionId);
     }else{
       String paramValue = '3';
-      activeTask = await active.getData(paramValue);
+      final sessionId = authController.currentUser.value?.userId;
+      activeTask = await active.getData(paramValue, sessionId);
+      pendingTask = await pending.getData(paramValue, sessionId);
+      doneTask = await done.getData(paramValue, sessionId);
     }
-      pendingTask = await pending.getData();
-      doneTask = await done.getData();
+      // pendingTask = await pending.getData();
+      // doneTask = await done.getData();
       setState(() {});
     loading = true;
   }
@@ -55,16 +61,21 @@ class _TaskListPageState extends State<TaskListPage> {
 
   Future<void> getTasks(String searchText) async {
     // print("GET DATA LIST PROJECT");
-    if (authController.currentUser.value?.positionId.toString() == '2') {
+    if (authController.currentUser.value?.positionId.toString() == '1' || authController.currentUser.value?.positionId.toString() == '2') {
       String paramValue = '2';
-      activeTask = await active.getData(paramValue);
+      final sessionId = authController.currentUser.value?.userId;
+      activeTask = await active.getData(paramValue, sessionId);
+      pendingTask = await pending.getData(paramValue, sessionId);
+      doneTask = await done.getData(paramValue, sessionId);
     }else{
       String paramValue = '3';
-      activeTask = await active.getData(paramValue);
+      final sessionId = authController.currentUser.value?.userId;
+      activeTask = await active.getData(paramValue, sessionId);
+      pendingTask = await pending.getData(paramValue, sessionId);
+      doneTask = await done.getData(paramValue, sessionId);
 
     }
-    pendingTask = await pending.getData();
-    doneTask = await done.getData();
+
 
     if (searchText.isNotEmpty) {
       searchResults = activeTask

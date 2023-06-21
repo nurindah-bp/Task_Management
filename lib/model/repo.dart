@@ -223,10 +223,10 @@ class projecttaskProgress {
 // Project End
 // Task Start
 class activeTaskRepo {
-  Future getData(String paramValue) async {
+  Future getData(String paramValue, int? sessionId) async {
     try {
       final response =
-          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=1&position=$paramValue'));
+          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=1&position=$paramValue&sessionId=$sessionId'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -243,10 +243,10 @@ class activeTaskRepo {
 }
 
 class pendingTaskRepo {
-  Future getData() async {
+  Future getData(String paramValue, int? sessionId) async {
     try {
       final response =
-          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=3'));
+          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=3&position=$paramValue&sessionId=$sessionId'));
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -263,10 +263,10 @@ class pendingTaskRepo {
 }
 
 class doneTaskRepo {
-  Future getData() async {
+  Future getData(String paramValue, int? sessionId) async {
     try {
       final response =
-          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=2'));
+          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=2&position=$paramValue&sessionId=$sessionId'));
 
       if (response.statusCode == 200) {
         print(response.body);
