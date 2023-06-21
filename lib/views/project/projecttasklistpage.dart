@@ -1,6 +1,7 @@
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:task_management/controllers/auth_controller.dart';
@@ -9,6 +10,7 @@ import 'package:task_management/views/project/addprojecttask.dart';
 import 'package:task_management/views/project/projecttaskprogresspage.dart';
 
 import '../../model/repo.dart';
+import '../../utils/endpoint.dart';
 
 class ProjectTaskListPage extends StatefulWidget {
   // // const ProjectTaskListPage(String params, {super.key});
@@ -30,6 +32,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
   doneProjectTaskRepo done = doneProjectTaskRepo();
   bool loading = false;
   TextEditingController searchController = TextEditingController();
+  int activeCount = 0;
 
   // getData() async {
   //   activeProjectTask = await active.getData(widget.projectId);
@@ -38,11 +41,16 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
   //   setState(() {});
   // }
 
+
   Future<void> getData() async {
     activeProjectTask = await active.getData(widget.projectId);
     pendingProjectTask = await pending.getData(widget.projectId);
     doneProjectTask = await done.getData(widget.projectId);
+    activeCount = countActiveTasks(activeProjectTask);
     setState(() {});
+  }
+  int countActiveTasks(List<ProjectTask> tasks) {
+    return tasks.where((task) => task.projectId.isNotEmpty).length;
   }
 
   List<ProjectTask> searchResults = [];
@@ -114,6 +122,61 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                     context,
                     MaterialPageRoute(builder: (context) => const AddProjectTask()),
                   );
+                }
+              },
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.check_circle_outline_outlined,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+// do something
+                if (authController.currentUser.value?.positionId.toString() == '2') {
+                  if (activeCount == 0) {
+                    String projID = widget.projectId;
+                    var myResponse = await http.post(
+                        Uri.parse('${Endpoint.baseUrl}/project/updateProjStatus'),
+                        body: {
+                        'projID': projID,
+                        },
+                    );
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Sukses'),
+                          content: Text('Project Selesai. Semangat Menyelesaikan Project Lainnya'),
+                          actions: [
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }else{
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Perhatian'),
+                          content: Text('Tugas Proyek Tersisa : $activeCount'),
+                          actions: [
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 }
               },
             )
