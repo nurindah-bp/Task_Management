@@ -6,6 +6,7 @@ import 'package:task_management/controllers/procastionation_controller.dart';
 import 'package:task_management/models/dash_procastination.dart';
 import 'package:task_management/models/task_resume.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 import 'package:searchbar_animation/searchbar_animation.dart';
 
 class HomePage extends StatefulWidget {
@@ -241,8 +242,17 @@ class ResumeProjects extends StatelessWidget {
                   itemCount: controller.dataResumeAllProjects.length,
                   itemBuilder: (BuildContext context, int index) {
                     // Build each item in the grid
-                    final ratio = double.parse(controller.dataResumeAllProjects[index].done) / double.parse(controller.dataResumeAllProjects[index].total) * 100;
-                    final ratioResult = NumberFormat("#,##0.0").format(ratio);
+                    final double doneValue = double.tryParse(controller.dataResumeAllProjects[index].done) ?? 0.0;
+                    final double totalValue = double.tryParse(controller.dataResumeAllProjects[index].total) ?? 0.0;
+                    final ratio = doneValue / totalValue * 100;
+                    double ratioResult;
+                    if (ratio.isNaN) {
+                      ratioResult = 0.0; // or any other value you want to use for NaN
+                    } else {
+                      ratioResult = ratio;
+                    }
+                    final formattedRatio = NumberFormat("#,##0.0").format(ratioResult);
+                    // print('Formatted ratio: $formattedRatio');
                     return Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -266,7 +276,7 @@ class ResumeProjects extends StatelessWidget {
                               ), textAlign: TextAlign.center,
                             ),
                             Text(
-                              ratioResult.toString() + '%',
+                              formattedRatio.toString() + '%',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
