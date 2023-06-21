@@ -46,6 +46,8 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
   }
 
   List<ProjectTask> searchResults = [];
+  List<ProjectTask> searchPendingResults = [];
+  List<ProjectTask> searchDoneResults = [];
 
   Future<void> getPTasks(String searchText) async {
     print("GET DATA LIST PROJECT");
@@ -55,29 +57,21 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
 
     if (searchText.isNotEmpty) {
       searchResults = activeProjectTask
-          .where((ptask) =>
-      ptask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || ptask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+          .where((pTask) =>
+      pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+      searchPendingResults = pendingProjectTask
+          .where((pTask) =>
+      pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+      searchDoneResults = doneProjectTask
+          .where((pTask) =>
+      pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     } else {
       searchResults = [];
-    }
-
-    if (searchText.isNotEmpty) {
-      searchResults = pendingProjectTask
-          .where((project) =>
-      project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
-          .toList();
-    } else {
-      searchResults = [];
-    }
-
-    if (searchText.isNotEmpty) {
-      searchResults = doneProjectTask
-          .where((project) =>
-      project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
-          .toList();
-    } else {
-      searchResults = [];
+      searchPendingResults = [];
+      searchDoneResults = [];
     }
 
     setState(() {});
@@ -143,13 +137,13 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
             ListView.separated(
                 itemCount: searchResults.isNotEmpty ? searchResults.length : activeProjectTask.length,
                 itemBuilder: (context, index) {
-                  final ProjectTask ptask = searchResults.isNotEmpty ? searchResults[index] : activeProjectTask[index];
+                  final ProjectTask pTask = searchResults.isNotEmpty ? searchResults[index] : activeProjectTask[index];
                   return ListTile(
                     isThreeLine: true,
                     shape: Border(left: BorderSide(color: Colors.red, width: 5)),
                     title: Text(
                       // activeProjectTask[index].ptaskName,
-                      ptask.ptaskName,
+                      pTask.ptaskName,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
@@ -160,14 +154,15 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                         ),
                         Text(
                           // activeProjectTask[index].ptaskDescription,
-                          ptask.ptaskDescription,
+                          pTask.ptaskDescription,
                         ),
                         Row(
                           children: <Widget>[
                             Icon(Icons.account_circle),
                             SizedBox(width: 6),
                             Text(
-                              activeProjectTask[index].employeeName.employeeName,
+                              // activeProjectTask[index].employeeName.employeeName,
+                              pTask.employeeName.employeeName,
                             ),
                           ],
                         )
@@ -178,7 +173,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => projecttaskprogresspage(projectTaskId: activeProjectTask[index].ptaskId),
+                            builder: (context) => projecttaskprogresspage(projectTaskId: pTask.ptaskId),
                           ),
                         );
                       }
@@ -191,9 +186,9 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 // itemCount: activeProjectTask.length
             ),
             ListView.separated(
-                itemCount: searchResults.isNotEmpty ? searchResults.length : pendingProjectTask.length,
+                itemCount: searchPendingResults.isNotEmpty ? searchPendingResults.length : pendingProjectTask.length,
                 itemBuilder: (context, index) {
-                  final ProjectTask pTask = searchResults.isNotEmpty ? searchResults[index] : pendingProjectTask[index];
+                  final ProjectTask pTask = searchPendingResults.isNotEmpty ? searchPendingResults[index] : pendingProjectTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(left: BorderSide(color: Colors.yellow, width: 5)),
@@ -217,7 +212,8 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                pendingProjectTask[index].employeeName.employeeName,
+                                // pendingProjectTask[index].employeeName.employeeName,
+                                pTask.employeeName.employeeName,
                               ),
                             ],
                           )
@@ -230,9 +226,9 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                 // itemCount: pendingProjectTask.length
             ),
             ListView.separated(
-                itemCount: searchResults.isNotEmpty ? searchResults.length : doneProjectTask.length,
+                itemCount: searchDoneResults.isNotEmpty ? searchDoneResults.length : doneProjectTask.length,
                 itemBuilder: (context, index) {
-                  final ProjectTask pTask = searchResults.isNotEmpty ? searchResults[index] : doneProjectTask[index];
+                  final ProjectTask pTask = searchDoneResults.isNotEmpty ? searchDoneResults[index] : doneProjectTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(left: BorderSide(color: Colors.green, width: 5)),
@@ -256,7 +252,8 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                doneProjectTask[index].employeeName.employeeName,
+                                // doneProjectTask[index].employeeName.employeeName,
+                                pTask.employeeName.employeeName,
                               ),
                             ],
                           )

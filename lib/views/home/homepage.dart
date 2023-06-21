@@ -5,6 +5,7 @@ import 'package:task_management/controllers/auth_controller.dart';
 import 'package:task_management/controllers/procastionation_controller.dart';
 import 'package:task_management/models/dash_procastination.dart';
 import 'package:task_management/models/task_resume.dart';
+import 'package:intl/intl.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
 
 class HomePage extends StatefulWidget {
@@ -241,6 +242,7 @@ class ResumeProjects extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     // Build each item in the grid
                     final ratio = double.parse(controller.dataResumeAllProjects[index].done) / double.parse(controller.dataResumeAllProjects[index].total) * 100;
+                    final ratioResult = NumberFormat("#,##0.0").format(ratio);
                     return Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -264,7 +266,7 @@ class ResumeProjects extends StatelessWidget {
                               ), textAlign: TextAlign.center,
                             ),
                             Text(
-                              ratio.toString() + '%',
+                              ratioResult.toString() + '%',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,

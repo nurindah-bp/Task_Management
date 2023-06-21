@@ -6,6 +6,8 @@ import 'package:task_management/model/repo.dart';
 import 'package:task_management/models/task.dart';
 import 'package:task_management/views/task/addtask.dart';
 import 'package:task_management/views/task/tasklistprogress.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
 
 class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
@@ -15,6 +17,7 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
+  final AuthController authController = Get.find<AuthController>();
   List<Task> activeTask = [];
   List<Task> pendingTask = [];
   List<Task> doneTask = [];
@@ -33,7 +36,13 @@ class _TaskListPageState extends State<TaskListPage> {
 
   Future<void> getData() async {
     // print("GET DATA LIST PROJECT");
-    activeTask = await active.getData();
+    if (authController.currentUser.value?.positionId.toString() == '2') {
+      String paramValue = '2';
+      activeTask = await active.getData(paramValue);
+    }else{
+      String paramValue = '3';
+      activeTask = await active.getData(paramValue);
+    }
       pendingTask = await pending.getData();
       doneTask = await done.getData();
       setState(() {});
@@ -41,10 +50,19 @@ class _TaskListPageState extends State<TaskListPage> {
   }
 
   List<Task> searchResults = [];
+  List<Task> searchPendingResults = [];
+  List<Task> searchDoneResults = [];
 
   Future<void> getTasks(String searchText) async {
     // print("GET DATA LIST PROJECT");
-    activeTask = await active.getData();
+    if (authController.currentUser.value?.positionId.toString() == '2') {
+      String paramValue = '2';
+      activeTask = await active.getData(paramValue);
+    }else{
+      String paramValue = '3';
+      activeTask = await active.getData(paramValue);
+
+    }
     pendingTask = await pending.getData();
     doneTask = await done.getData();
 
@@ -53,26 +71,19 @@ class _TaskListPageState extends State<TaskListPage> {
           .where((task) =>
       task.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || task.taskName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
-    } else {
-      searchResults = [];
-    }
-
-    if (searchText.isNotEmpty) {
-      searchResults = pendingTask
+      searchPendingResults = pendingTask
           .where((task) =>
       task.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || task.taskName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
-    } else {
-      searchResults = [];
-    }
-
-    if (searchText.isNotEmpty) {
-      searchResults = doneTask
+      searchDoneResults = doneTask
           .where((task) =>
       task.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || task.taskName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
+
     } else {
       searchResults = [];
+      searchPendingResults = [];
+      searchDoneResults = [];
     }
 
     setState(() {});
@@ -161,7 +172,7 @@ class _TaskListPageState extends State<TaskListPage> {
                             Icon(Icons.account_circle),
                             SizedBox(width: 6),
                             Text(
-                              activeTask[index].employeeName.employeeName,
+                              task.employeeName.employeeName,
                             ),
                           ],
                         )
@@ -172,7 +183,7 @@ class _TaskListPageState extends State<TaskListPage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => TaskListProgress(
-                                  taskId: activeTask[index].taskId)));
+                                  taskId: task.taskId)));
                     },
                   );
                 },
@@ -182,9 +193,9 @@ class _TaskListPageState extends State<TaskListPage> {
                 // itemCount: activeTask.length
             ),
             ListView.separated(
-                itemCount: searchResults.isNotEmpty ? searchResults.length : pendingTask.length,
+                itemCount: searchPendingResults.isNotEmpty ? searchPendingResults.length : pendingTask.length,
                 itemBuilder: (context, index) {
-                  final Task task = searchResults.isNotEmpty ? searchResults[index] : pendingTask[index];
+                  final Task task = searchPendingResults.isNotEmpty ? searchPendingResults[index] : pendingTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(
@@ -209,7 +220,7 @@ class _TaskListPageState extends State<TaskListPage> {
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                pendingTask[index].employeeName.employeeName,
+                                task.employeeName.employeeName,
                               ),
                             ],
                           )
@@ -222,9 +233,9 @@ class _TaskListPageState extends State<TaskListPage> {
                 // itemCount: pendingTask.length
             ),
             ListView.separated(
-                itemCount: searchResults.isNotEmpty ? searchResults.length : doneTask.length,
+                itemCount: searchDoneResults.isNotEmpty ? searchDoneResults.length : doneTask.length,
                 itemBuilder: (context, index) {
-                  final Task task = searchResults.isNotEmpty ? searchResults[index] : doneTask[index];
+                  final Task task = searchDoneResults.isNotEmpty ? searchDoneResults[index] : doneTask[index];
                   return ListTile(
                       isThreeLine: true,
                       shape: Border(
@@ -249,7 +260,7 @@ class _TaskListPageState extends State<TaskListPage> {
                               Icon(Icons.account_circle),
                               SizedBox(width: 6),
                               Text(
-                                doneTask[index].employeeName.employeeName,
+                                task.employeeName.employeeName,
                               ),
                             ],
                           )

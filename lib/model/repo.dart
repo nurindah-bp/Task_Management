@@ -223,10 +223,10 @@ class projecttaskProgress {
 // Project End
 // Task Start
 class activeTaskRepo {
-  Future getData() async {
+  Future getData(String paramValue) async {
     try {
       final response =
-          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=1'));
+          await http.get(Uri.parse('${Endpoint.baseUrl}/task/taskList?sttask=1&position=$paramValue'));
 
       if (response.statusCode == 200) {
         print(response.body);

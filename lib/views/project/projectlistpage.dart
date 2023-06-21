@@ -38,6 +38,8 @@ class _ProjectListPageState extends State<ProjectListPage> {
   }
 
   List<Project> searchResults = [];
+  List<Project> searchPendingResults = [];
+  List<Project> searchDoneResults = [];
 
   Future<void> getProjects(String searchText) async {
     print("GET DATA LIST PROJECT");
@@ -50,8 +52,18 @@ class _ProjectListPageState extends State<ProjectListPage> {
           .where((project) =>
           project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.projectName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
+      searchPendingResults = listProject
+          .where((project) =>
+          project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.projectName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+      searchDoneResults = listProject
+          .where((project) =>
+          project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.projectName.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
     } else {
       searchResults = [];
+      searchPendingResults = [];
+      searchDoneResults = [];
     }
 
     setState(() {});
@@ -165,13 +177,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
               },
             ),
             ListView.separated(
-              itemCount: listProject3 != null ? listProject3.length : 0,
+              // itemCount: listProject3 != null ? listProject3.length : 0,
+              itemCount: searchPendingResults.isNotEmpty ? searchPendingResults.length : listProject3.length,
               itemBuilder: (context, index) {
+                final Project project = searchPendingResults.isNotEmpty ? searchPendingResults[index] : listProject3[index];
                 return ListTile(
                   isThreeLine: true,
                   shape: Border(left: BorderSide(color: Colors.yellow, width: 5)),
                   title: Text(
-                    listProject3[index].projectName,
+                    // listProject3[index].projectName,
+                    project.projectName,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
@@ -181,14 +196,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         height: 6,
                       ),
                       Text(
-                        listProject3[index].projectDescription,
+                        // listProject3[index].projectDescription,
+                        project.projectDescription,
                       ),
                       Row(
                         children: <Widget>[
                           Icon(Icons.account_circle),
                           SizedBox(width: 6),
                           Text(
-                            listProject3[index].employeeName.employeeName,
+                            // listProject3[index].employeeName.employeeName,
+                            project.employeeName.employeeName,
                           ),
                         ],
                       )
@@ -199,7 +216,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProjectTaskListPage(
-                          projectId: listProject3[index].projectId.toString(),
+                          projectId: project.projectId.toString(),
                         ),
                       ),
                     );
@@ -211,13 +228,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
               },
             ),
             ListView.separated(
-              itemCount: listProject2 != null ? listProject2.length : 0,
+              // itemCount: listProject2 != null ? listProject2.length : 0,
+              itemCount: searchDoneResults.isNotEmpty ? searchDoneResults.length : listProject2.length,
               itemBuilder: (context, index) {
+                final Project project = searchDoneResults.isNotEmpty ? searchDoneResults[index] : listProject2[index];
                 return ListTile(
                   isThreeLine: true,
                   shape: Border(left: BorderSide(color: Colors.green, width: 5)),
                   title: Text(
-                    listProject2[index].projectName,
+                    // listProject2[index].projectName,
+                    project.projectName,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
@@ -227,14 +247,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         height: 6,
                       ),
                       Text(
-                        listProject2[index].projectDescription,
+                        // listProject2[index].projectDescription,
+                        project.projectDescription,
                       ),
                       Row(
                         children: <Widget>[
                           Icon(Icons.account_circle),
                           SizedBox(width: 6),
                           Text(
-                            listProject2[index].employeeName.employeeName,
+                            // listProject2[index].employeeName.employeeName,
+                            project.employeeName.employeeName,
                           ),
                         ],
                       )
@@ -245,7 +267,8 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ProjectTaskListPage(
-                                  projectId: listProject2[index].projectId.toString(),
+                                  // projectId: listProject2[index].projectId.toString(),
+                                  projectId: project.projectId.toString(),
                                 )));
                   },
                 );
