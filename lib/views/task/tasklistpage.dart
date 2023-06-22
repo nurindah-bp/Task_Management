@@ -208,6 +208,15 @@ class _TaskListPageState extends State<TaskListPage> {
                               task.employeeName.employeeName,
                             ),
                           ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.date_range_rounded),
+                            SizedBox(width: 6),
+                            Text(
+                              task.employeeName.employeeName,
+                            ),
+                          ],
                         )
                       ],
                     ),

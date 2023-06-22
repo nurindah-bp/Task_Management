@@ -316,7 +316,7 @@ class ProcastinationChart extends StatelessWidget {
                   primaryXAxis: CategoryAxis(),
                   series: <BarSeries<DashProcastination, String>>[
                     BarSeries<DashProcastination, String>(
-                      color: Colors.blueAccent,
+                      color: Colors.lightBlue,
                       // Bind data source
                       dataSource: controller.dataProkastinasi.toList(),
                       xValueMapper: (DashProcastination data, _) => data.employeeName,
@@ -350,7 +350,7 @@ class ProductivityChart extends StatelessWidget {
                   primaryXAxis: CategoryAxis(),
                   series: <BarSeries<DashProcastination, String>>[
                     BarSeries<DashProcastination, String>(
-                      color: Colors.blueAccent,
+                      color: Colors.lightGreen,
                       // Bind data source
                       dataSource: controller.dataProduktivitas.toList(),
                       xValueMapper: (DashProcastination data, _) => data.employeeName,
