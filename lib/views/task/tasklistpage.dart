@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -105,6 +107,26 @@ class _TaskListPageState extends State<TaskListPage> {
   void initState() {
     getData();
     super.initState();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    stopTimer(); // Stop the timer when the widget is disposed
+    super.dispose();
+  }
+
+  Timer? timer;
+
+  void startTimer() {
+    const duration = Duration(seconds: 2); // Set the duration for auto-reload
+    timer = Timer.periodic(duration, (Timer t) {
+      getData(); // Trigger data retrieval and update
+    });
+  }
+
+  void stopTimer() {
+    timer?.cancel(); // Cancel the timer if it is running
   }
 
   @override

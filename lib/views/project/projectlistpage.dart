@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:get/get.dart';
@@ -74,8 +76,27 @@ class _ProjectListPageState extends State<ProjectListPage> {
   void initState() {
     getData();
     super.initState();
+    startTimer();
   }
 
+  @override
+  void dispose() {
+    stopTimer(); // Stop the timer when the widget is disposed
+    super.dispose();
+  }
+
+  Timer? timer;
+
+  void startTimer() {
+    const duration = Duration(seconds: 2); // Set the duration for auto-reload
+    timer = Timer.periodic(duration, (Timer t) {
+      getData(); // Trigger data retrieval and update
+    });
+  }
+
+  void stopTimer() {
+    timer?.cancel(); // Cancel the timer if it is running
+  }
   @override
   Widget build(BuildContext context) {
     String projDivId = widget.projectDivId;

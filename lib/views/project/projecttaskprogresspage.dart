@@ -1,8 +1,6 @@
-import 'dart:convert';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:task_management/model/repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:task_management/models/project_task.dart';
@@ -43,7 +41,8 @@ class _projecttaskprogresspageState extends State<projecttaskprogresspage> {
   projecttaskDetil detail = projecttaskDetil();
   projecttaskProgress progress = projecttaskProgress();
 
-  getData() async {
+  // getData() async {
+  Future<void> getData() async {
     detilTask = await detail.getData(widget.projectTaskId);
     progressTask = await progress.getData(widget.projectTaskId);
     setState(() {});
@@ -53,6 +52,26 @@ class _projecttaskprogresspageState extends State<projecttaskprogresspage> {
   void initState() {
     getData();
     super.initState();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    stopTimer(); // Stop the timer when the widget is disposed
+    super.dispose();
+  }
+
+  Timer? timer;
+
+  void startTimer() {
+    const duration = Duration(seconds: 2); // Set the duration for auto-reload
+    timer = Timer.periodic(duration, (Timer t) {
+      getData(); // Trigger data retrieval and update
+    });
+  }
+
+  void stopTimer() {
+    timer?.cancel(); // Cancel the timer if it is running
   }
 
   @override

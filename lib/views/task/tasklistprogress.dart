@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/src/widgets/framework.dart';
@@ -39,16 +41,41 @@ class _TaskListProgressState extends State<TaskListProgress> {
   taskDetil detail = taskDetil();
   taskProgress progress = taskProgress();
 
-  getData() async {
-    detilTask = await detail.getData(widget.taskId);
-    progressTask = await progress.getData(widget.taskId);
-    setState(() {});
-  }
-
   @override
   void initState() {
     getData();
     super.initState();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    stopTimer(); // Stop the timer when the widget is disposed
+    super.dispose();
+  }
+
+  // getData() async {
+  //   detilTask = await detail.getData(widget.taskId);
+  //   progressTask = await progress.getData(widget.taskId);
+  //   setState(() {});
+  // }
+
+  Future<void> getData() async {
+    detilTask = await detail.getData(widget.taskId);
+    progressTask = await progress.getData(widget.taskId);
+    setState(() {});
+  }
+  Timer? timer;
+
+  void startTimer() {
+    const duration = Duration(seconds: 2); // Set the duration for auto-reload
+    timer = Timer.periodic(duration, (Timer t) {
+      getData(); // Trigger data retrieval and update
+    });
+  }
+
+  void stopTimer() {
+    timer?.cancel(); // Cancel the timer if it is running
   }
 
   @override
