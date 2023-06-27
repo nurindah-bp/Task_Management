@@ -5,6 +5,8 @@ class ProjectTask {
   final String ptaskId;
   String ptaskName;
   String ptaskDescription;
+  String ptaskDate;
+  String ptaskDeadline;
   Employee employeeName;
 
   ProjectTask({
@@ -12,6 +14,8 @@ class ProjectTask {
     required this.ptaskId,
     required this.ptaskName,
     required this.ptaskDescription,
+    required this.ptaskDate,
+    required this.ptaskDeadline,
     required this.employeeName,
   });
 
@@ -21,6 +25,8 @@ class ProjectTask {
       ptaskId: json['ptask_id'].toString(),
       ptaskName: json['ptask_name'],
       ptaskDescription: json['ptask_description'],
+      ptaskDate: json['ptask_date'],
+      ptaskDeadline: json['ptask_deadline'],
       employeeName: Employee.fromJson(json['pegawai']),
     );
   }

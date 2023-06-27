@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:get/get.dart';
@@ -29,7 +29,6 @@ class _ProjectListPageState extends State<ProjectListPage> {
   bool loading = false;
   TextEditingController searchController = TextEditingController();
 
-
   Future<void> getData() async {
     print("GET DATA LIST PROJECT");
     listProject = await repository.getData(widget.projectDivId);
@@ -52,15 +51,18 @@ class _ProjectListPageState extends State<ProjectListPage> {
     if (searchText.isNotEmpty) {
       searchResults = listProject
           .where((project) =>
-          project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.projectName.toLowerCase().contains(searchText.toLowerCase()))
+              project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) ||
+              project.projectName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
       searchPendingResults = listProject
           .where((project) =>
-          project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.projectName.toLowerCase().contains(searchText.toLowerCase()))
+              project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) ||
+              project.projectName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
       searchDoneResults = listProject
           .where((project) =>
-          project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || project.projectName.toLowerCase().contains(searchText.toLowerCase()))
+              project.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) ||
+              project.projectName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     } else {
       searchResults = [];
@@ -97,6 +99,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
   void stopTimer() {
     timer?.cancel(); // Cancel the timer if it is running
   }
+
   @override
   Widget build(BuildContext context) {
     String projDivId = widget.projectDivId;
@@ -151,152 +154,289 @@ class _ProjectListPageState extends State<ProjectListPage> {
         ),
         body: TabBarView(
           children: <Widget>[
-            ListView.separated(
-              itemCount: searchResults.isNotEmpty ? searchResults.length : listProject.length,
-              itemBuilder: (context, index) {
-                // final int params = listProject[index].id_proyek;
-                final Project project = searchResults.isNotEmpty ? searchResults[index] : listProject[index];
-                return ListTile(
-                  isThreeLine: true,
-                  shape: Border(left: BorderSide(color: Colors.red, width: 5)),
-                  title: Text(
-                    project.projectName,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 6,
-                      ),
-                      Text(
-                        project.projectDescription,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Icon(Icons.account_circle),
-                          SizedBox(width: 6),
-                          Text(project.employeeName.employeeName),
-                        ],
-                      )
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProjectTaskListPage(
-                          projectId: project.projectId.toString(),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: ListView.separated(
+                itemCount: searchResults.isNotEmpty ? searchResults.length : listProject.length,
+                itemBuilder: (context, index) {
+                  // final int params = listProject[index].id_proyek;
+                  final Project project = searchResults.isNotEmpty ? searchResults[index] : listProject[index];
+                  DateTime assignDate = DateTime.parse(project.projectDate);
+                  DateTime deadline = DateTime.parse(project.projectDeadline);
+                  String formattedAssignDate = DateFormat('dd-MM-yyyy').format(assignDate);
+                  String formattedAssignTime = DateFormat('HH:mm:ss').format(assignDate);
+                  String formattedDateline = DateFormat('dd-MM-yyyy').format(deadline);
+                  String formattedDeadlineTime = DateFormat('HH:mm:ss').format(deadline);
+                  return ListTile(
+                    isThreeLine: true,
+                    shape: Border(left: BorderSide(color: Colors.red, width: 5)),
+                    title: Wrap(
+                      children: [
+                        Text(
+                          project.projectName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
-              separatorBuilder: (context, index) {
-                return Divider();
-              },
-            ),
-            ListView.separated(
-              // itemCount: listProject3 != null ? listProject3.length : 0,
-              itemCount: searchPendingResults.isNotEmpty ? searchPendingResults.length : listProject3.length,
-              itemBuilder: (context, index) {
-                final Project project = searchPendingResults.isNotEmpty ? searchPendingResults[index] : listProject3[index];
-                return ListTile(
-                  isThreeLine: true,
-                  shape: Border(left: BorderSide(color: Colors.yellow, width: 5)),
-                  title: Text(
-                    // listProject3[index].projectName,
-                    project.projectName,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 6,
-                      ),
-                      Text(
-                        // listProject3[index].projectDescription,
-                        project.projectDescription,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Icon(Icons.account_circle),
-                          SizedBox(width: 6),
-                          Text(
-                            // listProject3[index].employeeName.employeeName,
-                            project.employeeName.employeeName,
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProjectTaskListPage(
-                          projectId: project.projectId.toString(),
+                      ],
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 6,
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
-              separatorBuilder: (context, index) {
-                return Divider();
-              },
-            ),
-            ListView.separated(
-              // itemCount: listProject2 != null ? listProject2.length : 0,
-              itemCount: searchDoneResults.isNotEmpty ? searchDoneResults.length : listProject2.length,
-              itemBuilder: (context, index) {
-                final Project project = searchDoneResults.isNotEmpty ? searchDoneResults[index] : listProject2[index];
-                return ListTile(
-                  isThreeLine: true,
-                  shape: Border(left: BorderSide(color: Colors.green, width: 5)),
-                  title: Text(
-                    // listProject2[index].projectName,
-                    project.projectName,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 6,
-                      ),
-                      Text(
-                        // listProject2[index].projectDescription,
-                        project.projectDescription,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Icon(Icons.account_circle),
-                          SizedBox(width: 6),
-                          Text(
-                            // listProject2[index].employeeName.employeeName,
-                            project.employeeName.employeeName,
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.note_alt_outlined,
+                              color: Colors.blue[600],
+                            ),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                project.projectDescription,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.account_circle, color: Colors.blue[600]),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(project.employeeName.employeeName),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.date_range_rounded, color: Colors.blue[600]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedAssignDate,
+                            ),
+                            Text(
+                              " " + formattedAssignTime,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.timeline_rounded, color: Colors.red[400]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedDateline,
+                            ),
+                            Text(
+                              " " + formattedDeadlineTime,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProjectTaskListPage(
-                                  // projectId: listProject2[index].projectId.toString(),
-                                  projectId: project.projectId.toString(),
-                                )));
-                  },
-                );
-              },
-              separatorBuilder: (context, index) {
-                return Divider();
-              },
+                          builder: (context) => ProjectTaskListPage(
+                            projectId: project.projectId.toString(),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: ListView.separated(
+                // itemCount: listProject3 != null ? listProject3.length : 0,
+                itemCount: searchPendingResults.isNotEmpty ? searchPendingResults.length : listProject3.length,
+                itemBuilder: (context, index) {
+                  final Project project = searchPendingResults.isNotEmpty ? searchPendingResults[index] : listProject3[index];
+                  DateTime assignDate = DateTime.parse(project.projectDate);
+                  DateTime deadline = DateTime.parse(project.projectDeadline);
+                  String formattedAssignDate = DateFormat('dd-MM-yyyy').format(assignDate);
+                  String formattedAssignTime = DateFormat('HH:mm:ss').format(assignDate);
+                  String formattedDateline = DateFormat('dd-MM-yyyy').format(deadline);
+                  String formattedDeadlineTime = DateFormat('HH:mm:ss').format(deadline);
+                  return ListTile(
+                    isThreeLine: true,
+                    shape: Border(left: BorderSide(color: Colors.yellow, width: 5)),
+                    title: Text(
+                      // listProject3[index].projectName,
+                      project.projectName,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.note_alt_outlined,
+                              color: Colors.blue[600],
+                            ),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                project.projectDescription,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.account_circle, color: Colors.blue[600]),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(project.employeeName.employeeName),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.date_range_rounded, color: Colors.blue[600]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedAssignDate,
+                            ),
+                            Text(
+                              " " + formattedAssignTime,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.timeline_rounded, color: Colors.red[400]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedDateline,
+                            ),
+                            Text(
+                              " " + formattedDeadlineTime,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProjectTaskListPage(
+                            projectId: project.projectId.toString(),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: ListView.separated(
+                // itemCount: listProject2 != null ? listProject2.length : 0,
+                itemCount: searchDoneResults.isNotEmpty ? searchDoneResults.length : listProject2.length,
+                itemBuilder: (context, index) {
+                  final Project project = searchDoneResults.isNotEmpty ? searchDoneResults[index] : listProject2[index];
+                  DateTime assignDate = DateTime.parse(project.projectDate);
+                  DateTime deadline = DateTime.parse(project.projectDeadline);
+                  String formattedAssignDate = DateFormat('dd-MM-yyyy').format(assignDate);
+                  String formattedAssignTime = DateFormat('HH:mm:ss').format(assignDate);
+                  String formattedDateline = DateFormat('dd-MM-yyyy').format(deadline);
+                  String formattedDeadlineTime = DateFormat('HH:mm:ss').format(deadline);
+                  return ListTile(
+                    isThreeLine: true,
+                    shape: Border(left: BorderSide(color: Colors.green, width: 5)),
+                    title: Text(
+                      // listProject2[index].projectName,
+                      project.projectName,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.note_alt_outlined,
+                              color: Colors.blue[600],
+                            ),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                project.projectDescription,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.account_circle, color: Colors.blue[600]),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(project.employeeName.employeeName),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.date_range_rounded, color: Colors.blue[600]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedAssignDate,
+                            ),
+                            Text(
+                              " " + formattedAssignTime,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.timeline_rounded, color: Colors.red[400]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedDateline,
+                            ),
+                            Text(
+                              " " + formattedDeadlineTime,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProjectTaskListPage(
+                                // projectId: listProject2[index].projectId.toString(),
+                                projectId: project.projectId.toString(),
+                              )));
+                    },
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+              ),
             ),
           ],
         ),

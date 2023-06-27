@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:task_management/model/repo.dart';
@@ -215,6 +216,9 @@ class _projecttaskprogresspageState extends State<projecttaskprogresspage> {
                             : progressTask[index].ptask_progressstatus == '2'
                                 ? Colors.green
                                 : Colors.yellow;
+                    DateTime assignDate = DateTime.parse(progressTask[index].ptask_progressdate);
+                    String formattedAssignDate = DateFormat('dd-MM-yyyy').format(assignDate);
+                    String formattedAssignTime = DateFormat('HH:mm:ss').format(assignDate);
                     return ListTile(
                       shape: Border(
                         left: BorderSide(color: colorLabel, width: 5),
@@ -230,13 +234,29 @@ class _projecttaskprogresspageState extends State<projecttaskprogresspage> {
                             height: 6,
                           ),
                           Row(
+                            children: [
+                              Icon(
+                                Icons.note_alt_outlined,
+                                color: Colors.blue[600],
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                // pendingProjectTask[index].ptaskDescription,
+                                progressTask[index].ptask_progressnote,
+                              ),
+                            ],
+                          ),
+                          Row(
                             children: <Widget>[
                               Icon(
-                                Icons.calendar_today_rounded,
+                                Icons.calendar_today_rounded, color: Colors.blue[600]
                               ),
                               SizedBox(width: 10),
                               Text(
-                                progressTask[index].ptask_progressdate,
+                                formattedAssignDate,
+                              ),
+                              Text(
+                                " " + formattedAssignTime,
                               ),
                             ],
                           ),

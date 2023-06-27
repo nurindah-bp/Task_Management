@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:intl/intl.dart';
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -43,7 +43,6 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
   //   setState(() {});
   // }
 
-
   Future<void> getData() async {
     activeProjectTask = await active.getData(widget.projectId);
     pendingProjectTask = await pending.getData(widget.projectId);
@@ -51,6 +50,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
     activeCount = countActiveTasks(activeProjectTask);
     setState(() {});
   }
+
   int countActiveTasks(List<ProjectTask> tasks) {
     return tasks.where((task) => task.projectId.isNotEmpty).length;
   }
@@ -68,15 +68,18 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
     if (searchText.isNotEmpty) {
       searchResults = activeProjectTask
           .where((pTask) =>
-      pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+              pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) ||
+              pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
       searchPendingResults = pendingProjectTask
           .where((pTask) =>
-      pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+              pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) ||
+              pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
       searchDoneResults = doneProjectTask
           .where((pTask) =>
-      pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) || pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
+              pTask.employeeName.employeeName.toLowerCase().contains(searchText.toLowerCase()) ||
+              pTask.ptaskName.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     } else {
       searchResults = [];
@@ -114,7 +117,6 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
     timer?.cancel(); // Cancel the timer if it is running
   }
 
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -124,13 +126,13 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
         appBar: AppBar(
           // title: const Text('Daftar Tugas Proyek')
           title: AnimatedSearchBar(
-                      label: "Search Something Here",
-                      onChanged: (value) {
-                        setState(() {
-                          getPTasks(value);
-                        });
-                      },
-                    ),
+            label: "Search Something Here",
+            onChanged: (value) {
+              setState(() {
+                getPTasks(value);
+              });
+            },
+          ),
           automaticallyImplyLeading: true,
           actions: <Widget>[
             IconButton(
@@ -159,10 +161,10 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                   if (activeCount == 0) {
                     String projID = widget.projectId;
                     var myResponse = await http.post(
-                        Uri.parse('${Endpoint.baseUrl}/project/updateProjStatus'),
-                        body: {
+                      Uri.parse('${Endpoint.baseUrl}/project/updateProjStatus'),
+                      body: {
                         'projID': projID,
-                        },
+                      },
                     );
                     showDialog(
                       context: context,
@@ -181,7 +183,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                         );
                       },
                     );
-                  }else{
+                  } else {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -200,11 +202,12 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                       },
                     );
                   }
-                }else{
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Fitur Hanya Untuk Kepala Bidang'),
+                      content: Text('Fitur Hanya Untuk Kepala Bidang', style: TextStyle(color: Colors.black),),
                       backgroundColor: Colors.yellow,
+
                     ),
                   );
                 }
@@ -227,10 +230,19 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
         ),
         body: TabBarView(
           children: <Widget>[
-            ListView.separated(
+            Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: ListView.separated(
                 itemCount: searchResults.isNotEmpty ? searchResults.length : activeProjectTask.length,
                 itemBuilder: (context, index) {
                   final ProjectTask pTask = searchResults.isNotEmpty ? searchResults[index] : activeProjectTask[index];
+                  DateTime assignDate = DateTime.parse(pTask.ptaskDate);
+                  DateTime deadline = DateTime.parse(pTask.ptaskDeadline);
+                  String formattedAssignDate = DateFormat('dd-MM-yyyy').format(assignDate);
+                  String formattedAssignTime = DateFormat('HH:mm:ss').format(assignDate);
+                  String formattedDateline = DateFormat('dd-MM-yyyy').format(deadline);
+                  String formattedDeadlineTime = DateFormat('HH:mm:ss').format(deadline);
                   return ListTile(
                     isThreeLine: true,
                     shape: Border(left: BorderSide(color: Colors.red, width: 5)),
@@ -245,20 +257,55 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                         SizedBox(
                           height: 6,
                         ),
-                        Text(
-                          // activeProjectTask[index].ptaskDescription,
-                          pTask.ptaskDescription,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.note_alt_outlined,
+                              color: Colors.blue[600],
+                            ),
+                            SizedBox(width: 6),
+                            Flexible(child: Text(
+                              // activeProjectTask[index].ptaskDescription,
+                              pTask.ptaskDescription,
+                            ),
+                            ),
+                          ],
                         ),
                         Row(
                           children: <Widget>[
-                            Icon(Icons.account_circle),
+                            Icon(Icons.account_circle, color: Colors.blue[600]),
                             SizedBox(width: 6),
-                            Text(
+                            Flexible(child: Text(
                               // activeProjectTask[index].employeeName.employeeName,
                               pTask.employeeName.employeeName,
+                            ),),
+
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.date_range_rounded, color: Colors.blue[600]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedAssignDate,
+                            ),
+                            Text(
+                              " " + formattedAssignTime,
                             ),
                           ],
-                        )
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.timeline_rounded, color: Colors.red[400]),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedDateline,
+                            ),
+                            Text(
+                              " " + formattedDeadlineTime,
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     onTap: () {
@@ -277,8 +324,12 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                   return Divider();
                 },
                 // itemCount: activeProjectTask.length
+              ),
             ),
-            ListView.separated(
+            Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: ListView.separated(
                 itemCount: searchPendingResults.isNotEmpty ? searchPendingResults.length : pendingProjectTask.length,
                 itemBuilder: (context, index) {
                   final ProjectTask pTask = searchPendingResults.isNotEmpty ? searchPendingResults[index] : pendingProjectTask[index];
@@ -296,13 +347,22 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                           SizedBox(
                             height: 6,
                           ),
-                          Text(
-                            // pendingProjectTask[index].ptaskDescription,
-                            pTask.ptaskDescription,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.note_alt_outlined,
+                                color: Colors.blue[600],
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                // pendingProjectTask[index].ptaskDescription,
+                                pTask.ptaskDescription,
+                              ),
+                            ],
                           ),
                           Row(
                             children: <Widget>[
-                              Icon(Icons.account_circle),
+                              Icon(Icons.account_circle, color: Colors.blue[600]),
                               SizedBox(width: 6),
                               Text(
                                 // pendingProjectTask[index].employeeName.employeeName,
@@ -317,8 +377,12 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                   return Divider();
                 },
                 // itemCount: pendingProjectTask.length
+              ),
             ),
-            ListView.separated(
+            Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: ListView.separated(
                 itemCount: searchDoneResults.isNotEmpty ? searchDoneResults.length : doneProjectTask.length,
                 itemBuilder: (context, index) {
                   final ProjectTask pTask = searchDoneResults.isNotEmpty ? searchDoneResults[index] : doneProjectTask[index];
@@ -336,13 +400,22 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                           SizedBox(
                             height: 6,
                           ),
-                          Text(
-                            // doneProjectTask[index].ptaskDescription,
-                            pTask.ptaskDescription,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.note_alt_outlined,
+                                color: Colors.blue[600],
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                // doneProjectTask[index].ptaskDescription,
+                                pTask.ptaskDescription,
+                              ),
+                            ],
                           ),
                           Row(
                             children: <Widget>[
-                              Icon(Icons.account_circle),
+                              Icon(Icons.account_circle, color: Colors.blue[600]),
                               SizedBox(width: 6),
                               Text(
                                 // doneProjectTask[index].employeeName.employeeName,
@@ -357,6 +430,7 @@ class _ProjectTaskListPageState extends State<ProjectTaskListPage> {
                   return Divider();
                 },
                 // itemCount: doneProjectTask.length
+              ),
             ),
           ],
         ),

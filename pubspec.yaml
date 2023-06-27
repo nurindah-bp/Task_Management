@@ -46,6 +46,7 @@ dependencies:
   easy_search_bar: ^2.5.0
   searchbar_animation: ^0.0.4
   animated_search_bar: ^2.5.0
+  flutter_native_timezone: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/src/widgets/framework.dart';
@@ -216,6 +216,9 @@ class _TaskListProgressState extends State<TaskListProgress> {
                           : progressTask[index].taskProgressstatus == '2'
                               ? Colors.green
                               : Colors.yellow;
+                  DateTime progressDate = DateTime.parse(progressTask[index].taskProgressdate);
+                  String formattedDate = DateFormat('dd-MM-yyyy').format(progressDate);
+                  String formattedTime = DateFormat('HH:mm:ss').format(progressDate);
                   return ListTile(
                     shape: Border(
                       left: BorderSide(color: colorLabel, width: 5),
@@ -233,11 +236,11 @@ class _TaskListProgressState extends State<TaskListProgress> {
                         Row(
                           children: <Widget>[
                             Icon(
-                              Icons.calendar_today_rounded,
+                              Icons.calendar_today_rounded, color: Colors.blue[600]
                             ),
                             SizedBox(width: 10),
                             Text(
-                              progressTask[index].taskProgressdate,
+                              formattedDate + " " + formattedTime,
                             ),
                           ],
                         ),
