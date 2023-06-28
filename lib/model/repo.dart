@@ -323,3 +323,45 @@ class taskProgress {
   }
 }
 //Task End
+//Notification Start
+class notifactiveProjectTask {
+  Future getData(String paramValue, int? sessionId) async {
+    try {
+      final response = await http.get(Uri.parse(
+          '${Endpoint.baseUrl}/notification/ptaskList?stptask=1&position=$paramValue&sessionId=$sessionId'));
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        Iterable it = jsonDecode(response.body);
+        List<ProjectTask> dataProject =
+        it.map((e) => ProjectTask.fromJson(e)).toList();
+        return dataProject;
+      } else {
+        throw Exception('Failed to load album');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+}
+
+class notifactiveTask {
+  Future getData(String paramValue, int? sessionId) async {
+    try {
+      final response =
+      await http.get(Uri.parse('${Endpoint.baseUrl}/notification/taskList?sttask=1&position=$paramValue&sessionId=$sessionId'));
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        Iterable it = jsonDecode(response.body);
+        List<Task> dataProject = it.map((e) => Task.fromJson(e)).toList();
+        return dataProject;
+      } else {
+        throw Exception('Failed to load album');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+}
+//Notification End

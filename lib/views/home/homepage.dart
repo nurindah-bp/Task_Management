@@ -8,6 +8,11 @@ import 'package:task_management/models/task_resume.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
 import 'package:searchbar_animation/searchbar_animation.dart';
+import 'package:task_management/views/notification/notification.dart';
+
+import '../../model/repo.dart';
+import '../../models/project_task.dart';
+import '../../models/task.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +26,14 @@ class _HomePageState extends State<HomePage> {
   final AuthController authController = Get.find<AuthController>();
   RxList<TaskResume> dataResumeTask = RxList<TaskResume>();
 
+  List<Task> activeTask = [];
+  List<ProjectTask> activeProjectTask = [];
+  notifactiveTask active = notifactiveTask();
+  notifactiveProjectTask activePTask = notifactiveProjectTask();
+  int activeCount = 0;
+  int activePTaskCount = 0;
+
+
   bool isLoading = true;
 
   @override
@@ -29,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     loadData();
   }
 
-  void loadData() async {
+  Future<void> loadData() async {
     await procastinationController.getData();
     await procastinationController.getDataProductivity();
     await procastinationController.getDataResumeTask();
@@ -38,10 +51,35 @@ class _HomePageState extends State<HomePage> {
     if (procastinationController.dataResumeAllProjects.isEmpty) {
       await procastinationController.getDataResumeProjects();
     }
+    if (authController.currentUser.value?.positionId.toString() == '1' || authController.currentUser.value?.positionId.toString() == '2') {
+      String paramValue = '2';
+      final sessionId = authController.currentUser.value?.userId;
+      activeTask = await active.getData(paramValue, sessionId);
+    activeProjectTask = await activePTask.getData(paramValue, sessionId);
+    } else {
+      String paramValue = '3';
+      final sessionId = authController.currentUser.value?.userId;
+      activeTask = await active.getData(paramValue, sessionId);
+    activeProjectTask = await activePTask.getData(paramValue, sessionId);
+    }
+    activeCount = countActiveTasks(activeTask);
+    activePTaskCount = countActivePTasks(activeProjectTask);
     // await procastinationController.getDataResumeProjects();
     setState(() {
       isLoading = false;
     });
+  }
+
+  int countActiveTasks(List<Task> tasks) {
+    return tasks
+        .where((task) => task.taskId.isNotEmpty)
+        .length;
+  }
+
+  int countActivePTasks(List<ProjectTask> ptasks) {
+    return ptasks
+        .where((ptask) => ptask.projectId.isNotEmpty)
+        .length;
   }
 
   Widget buildKepsek() {
@@ -118,12 +156,24 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Flexible(
-                  flex: 0,
-                  child: Icon(
-                    Icons.notifications_active,
-                    size: 30,
-                    color: Colors.blueAccent,
-                  ),
+                    flex: 0,
+                    child: IconButton(
+                      icon: (activePTaskCount == 0 || activeCount == 0) ? Icon(
+                          Icons.notifications,
+                          size: 30,
+                          color: Colors.blue[600]
+                      ) : Icon(
+                          Icons.notifications_active,
+                          size: 30,
+                          color: Colors.red),
+                      onPressed: () {
+// do something
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NotifMenu()),
+                        );
+                      },
+                    )
                 ),
               ],
             ),
@@ -257,12 +307,12 @@ class ResumeProjects extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15.0),
-                        border: Border.all(
-                          color: Colors.blueAccent
-                        )// Customize the color as needed
+                          border: Border.all(
+                              color: Colors.blueAccent
+                          ) // Customize the color as needed
                       ),
                       child: Center(
-                          // child: Text(controller.dataResumeAllProjects[index].divName)
+                        // child: Text(controller.dataResumeAllProjects[index].divName)
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
