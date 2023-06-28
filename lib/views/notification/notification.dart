@@ -62,10 +62,12 @@ class _NotifMenuState extends State<NotifMenu> {
       String paramValue = '2';
       final sessionId = authController.currentUser.value?.userId;
       activeTask = await active.getData(paramValue, sessionId);
+      activeProjectTask = await activePTask.getData(paramValue, sessionId);
     } else {
       String paramValue = '3';
       final sessionId = authController.currentUser.value?.userId;
       activeTask = await active.getData(paramValue, sessionId);
+      activeProjectTask = await activePTask.getData(paramValue, sessionId);
     }
 
     if (searchText.isNotEmpty) {
@@ -118,7 +120,7 @@ class _NotifMenuState extends State<NotifMenu> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       initialIndex: 0,
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           // title: const Text('Daftar Tugas'),
@@ -151,19 +153,7 @@ class _NotifMenuState extends State<NotifMenu> {
               child: ListView.separated(
                 itemCount: searchPTaskResults.isNotEmpty ? searchPTaskResults.length : activeProjectTask.length,
                 itemBuilder: (context, index) {
-                  // final ProjectTask pTask = searchPTaskResults.isNotEmpty ? searchPTaskResults[index] : activeProjectTask[index];
-                  List<ProjectTask> sortedTasks =
-                      searchPTaskResults.isNotEmpty ? List.from(searchPTaskResults) : List.from(activeProjectTask);
-
-                  sortedTasks.sort((a, b) {
-                    DateTime deadlineA = DateTime.parse(a.ptaskDeadline);
-                    DateTime deadlineB = DateTime.parse(b.ptaskDeadline);
-                    return deadlineB.compareTo(deadlineA);
-                  });
-
-                  List<ProjectTask> limitedTasks = sortedTasks.sublist(0, 3);
-
-                  final ProjectTask pTask = limitedTasks[index];
+                  final ProjectTask pTask = searchPTaskResults.isNotEmpty ? searchPTaskResults[index] : activeProjectTask[index];
                   DateTime assignDate = DateTime.parse(pTask.ptaskDate);
                   DateTime deadline = DateTime.parse(pTask.ptaskDeadline);
                   String formattedAssignDate = DateFormat('dd-MM-yyyy').format(assignDate);

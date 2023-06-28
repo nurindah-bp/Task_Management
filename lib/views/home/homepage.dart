@@ -33,7 +33,6 @@ class _HomePageState extends State<HomePage> {
   int activeCount = 0;
   int activePTaskCount = 0;
 
-
   bool isLoading = true;
 
   @override
@@ -43,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadData() async {
+    // print("GET DATA LIST PROJECT $activePTaskCount & $activeCount");
     await procastinationController.getData();
     await procastinationController.getDataProductivity();
     await procastinationController.getDataResumeTask();
@@ -55,12 +55,12 @@ class _HomePageState extends State<HomePage> {
       String paramValue = '2';
       final sessionId = authController.currentUser.value?.userId;
       activeTask = await active.getData(paramValue, sessionId);
-    activeProjectTask = await activePTask.getData(paramValue, sessionId);
+      activeProjectTask = await activePTask.getData(paramValue, sessionId);
     } else {
       String paramValue = '3';
       final sessionId = authController.currentUser.value?.userId;
       activeTask = await active.getData(paramValue, sessionId);
-    activeProjectTask = await activePTask.getData(paramValue, sessionId);
+      activeProjectTask = await activePTask.getData(paramValue, sessionId);
     }
     activeCount = countActiveTasks(activeTask);
     activePTaskCount = countActivePTasks(activeProjectTask);
@@ -71,15 +71,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   int countActiveTasks(List<Task> tasks) {
-    return tasks
-        .where((task) => task.taskId.isNotEmpty)
-        .length;
+    return tasks.where((task) => task.taskId.isNotEmpty).length;
   }
 
   int countActivePTasks(List<ProjectTask> ptasks) {
-    return ptasks
-        .where((ptask) => ptask.projectId.isNotEmpty)
-        .length;
+    return ptasks.where((ptask) => ptask.projectId.isNotEmpty).length;
   }
 
   Widget buildKepsek() {
@@ -136,36 +132,27 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     margin: const EdgeInsets.only(top: 20, left: 10, right: 20, bottom: 20),
                     padding: const EdgeInsets.all(12),
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
+                    width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(border: Border.all(color: Color(0xff0693e3)), borderRadius: BorderRadius.circular(10)),
                     child: Obx(
-                          () =>
-                          Text(
-                            'Hi! ${authController.currentUser.value?.employeeName}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              height: 1.2125,
-                              color: Color(0xff000000),
-                            ),
-                          ),
+                      () => Text(
+                        'Hi! ${authController.currentUser.value?.employeeName}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          height: 1.2125,
+                          color: Color(0xff000000),
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 Flexible(
                     flex: 0,
                     child: IconButton(
-                      icon: (activePTaskCount == 0 || activeCount == 0) ? Icon(
-                          Icons.notifications,
-                          size: 30,
-                          color: Colors.blue[600]
-                      ) : Icon(
-                          Icons.notifications_active,
-                          size: 30,
-                          color: Colors.red),
+                      icon: (activePTaskCount == 0 && activeCount == 0)
+                          ? Icon(Icons.notifications, size: 30, color: Colors.blue[600])
+                          : Icon(Icons.notifications_active, size: 30, color: Colors.red),
                       onPressed: () {
 // do something
                         Navigator.push(
@@ -173,8 +160,7 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(builder: (context) => const NotifMenu()),
                         );
                       },
-                    )
-                ),
+                    )),
               ],
             ),
             SizedBox(
@@ -185,11 +171,10 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   if (authController.currentUser.value?.positionId.toString() == '1')
                     buildKepsek()
+                  else if (authController.currentUser.value?.positionId.toString() == '2')
+                    buildKabid()
                   else
-                    if (authController.currentUser.value?.positionId.toString() == '2')
-                      buildKabid()
-                    else
-                      buildEmployee(),
+                    buildEmployee(),
                 ],
               ),
             ),
@@ -277,70 +262,70 @@ class ResumeProjects extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.normal,
-              ), textAlign: TextAlign.center,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           Obx(
-                () =>
-                GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4, // Number of columns in the grid
-                    mainAxisSpacing: 5.0, // Spacing between rows
-                    crossAxisSpacing: 5.0, // Spacing between columns
-                  ),
+            () => GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4, // Number of columns in the grid
+                mainAxisSpacing: 5.0, // Spacing between rows
+                crossAxisSpacing: 5.0, // Spacing between columns
+              ),
 
-                  itemCount: controller.dataResumeAllProjects.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // Build each item in the grid
-                    final double doneValue = double.tryParse(controller.dataResumeAllProjects[index].done) ?? 0.0;
-                    final double totalValue = double.tryParse(controller.dataResumeAllProjects[index].total) ?? 0.0;
-                    final ratio = doneValue / totalValue * 100;
-                    double ratioResult;
-                    if (ratio.isNaN) {
-                      ratioResult = 0.0; // or any other value you want to use for NaN
-                    } else {
-                      ratioResult = ratio;
-                    }
-                    final formattedRatio = NumberFormat("#,##0.0").format(ratioResult);
-                    // print('Formatted ratio: $formattedRatio');
-                    return Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0),
-                          border: Border.all(
-                              color: Colors.blueAccent
-                          ) // Customize the color as needed
+              itemCount: controller.dataResumeAllProjects.length,
+              itemBuilder: (BuildContext context, int index) {
+                // Build each item in the grid
+                final double doneValue = double.tryParse(controller.dataResumeAllProjects[index].done) ?? 0.0;
+                final double totalValue = double.tryParse(controller.dataResumeAllProjects[index].total) ?? 0.0;
+                final ratio = doneValue / totalValue * 100;
+                double ratioResult;
+                if (ratio.isNaN) {
+                  ratioResult = 0.0; // or any other value you want to use for NaN
+                } else {
+                  ratioResult = ratio;
+                }
+                final formattedRatio = NumberFormat("#,##0.0").format(ratioResult);
+                // print('Formatted ratio: $formattedRatio');
+                return Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(color: Colors.blueAccent) // Customize the color as needed
                       ),
-                      child: Center(
-                        // child: Text(controller.dataResumeAllProjects[index].divName)
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              controller.dataResumeAllProjects[index].divName,
-                              // '10',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black,
-                              ), textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              formattedRatio.toString() + '%',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black,
-                              ), textAlign: TextAlign.center,
-                            ),
-                          ],
+                  child: Center(
+                    // child: Text(controller.dataResumeAllProjects[index].divName)
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          controller.dataResumeAllProjects[index].divName,
+                          // '10',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    );
-                  },
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(), // Disable scrolling of the GridView
-                ),
+                        Text(
+                          formattedRatio.toString() + '%',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(), // Disable scrolling of the GridView
+            ),
           ),
         ],
       ),
@@ -359,22 +344,21 @@ class ProcastinationChart extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Obx(
-                () =>
-                SfCartesianChart(
-                  title: ChartTitle(text: 'Tingkat Prokrastinasi Pegawai'),
-                  // Initialize category axis
-                  primaryXAxis: CategoryAxis(),
-                  series: <BarSeries<DashProcastination, String>>[
-                    BarSeries<DashProcastination, String>(
-                      color: Colors.lightBlue,
-                      // Bind data source
-                      dataSource: controller.dataProkastinasi.toList(),
-                      xValueMapper: (DashProcastination data, _) => data.employeeName,
-                      yValueMapper: (DashProcastination data, _) => data.prokastinasi,
-                      dataLabelSettings: DataLabelSettings(isVisible: true),
-                    ),
-                  ],
+            () => SfCartesianChart(
+              title: ChartTitle(text: 'Tingkat Prokrastinasi Pegawai'),
+              // Initialize category axis
+              primaryXAxis: CategoryAxis(),
+              series: <BarSeries<DashProcastination, String>>[
+                BarSeries<DashProcastination, String>(
+                  color: Colors.lightBlue,
+                  // Bind data source
+                  dataSource: controller.dataProkastinasi.toList(),
+                  xValueMapper: (DashProcastination data, _) => data.employeeName,
+                  yValueMapper: (DashProcastination data, _) => data.prokastinasi,
+                  dataLabelSettings: DataLabelSettings(isVisible: true),
                 ),
+              ],
+            ),
           ),
         ],
       ),
@@ -393,22 +377,21 @@ class ProductivityChart extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Obx(
-                () =>
-                SfCartesianChart(
-                  title: ChartTitle(text: 'Tingkat Produktivitas Pegawai'),
-                  // Initialize category axis
-                  primaryXAxis: CategoryAxis(),
-                  series: <BarSeries<DashProcastination, String>>[
-                    BarSeries<DashProcastination, String>(
-                      color: Colors.lightGreen,
-                      // Bind data source
-                      dataSource: controller.dataProduktivitas.toList(),
-                      xValueMapper: (DashProcastination data, _) => data.employeeName,
-                      yValueMapper: (DashProcastination data, _) => data.prokastinasi,
-                      dataLabelSettings: DataLabelSettings(isVisible: true),
-                    ),
-                  ],
+            () => SfCartesianChart(
+              title: ChartTitle(text: 'Tingkat Produktivitas Pegawai'),
+              // Initialize category axis
+              primaryXAxis: CategoryAxis(),
+              series: <BarSeries<DashProcastination, String>>[
+                BarSeries<DashProcastination, String>(
+                  color: Colors.lightGreen,
+                  // Bind data source
+                  dataSource: controller.dataProduktivitas.toList(),
+                  xValueMapper: (DashProcastination data, _) => data.employeeName,
+                  yValueMapper: (DashProcastination data, _) => data.prokastinasi,
+                  dataLabelSettings: DataLabelSettings(isVisible: true),
                 ),
+              ],
+            ),
           ),
         ],
       ),
@@ -440,7 +423,8 @@ class ResumeProjectBid extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ), textAlign: TextAlign.center,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           Row(
@@ -458,7 +442,8 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Belum Dikerjakan',
@@ -466,9 +451,9 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-
                     ],
                   ),
                 ),
@@ -485,7 +470,8 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Sedang Dikerjakan',
@@ -493,7 +479,8 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -510,7 +497,8 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Project Dipending',
@@ -518,12 +506,14 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ), Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -534,7 +524,8 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Project Diselesaikan',
@@ -542,7 +533,8 @@ class ResumeProjectBid extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -580,7 +572,8 @@ class ResumeKabidTask extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ), textAlign: TextAlign.center,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           Row(
@@ -598,7 +591,8 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Belum Dikerjakan',
@@ -606,7 +600,8 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -624,7 +619,8 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Sedang Dikerjakan',
@@ -632,7 +628,8 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -649,7 +646,8 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Tugas Dipending',
@@ -657,12 +655,14 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ), Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -673,7 +673,8 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Tugas Diselesaikan',
@@ -681,7 +682,8 @@ class ResumeKabidTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -719,7 +721,8 @@ class ResumeEmployeesTask extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ), textAlign: TextAlign.center,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           Row(
@@ -736,7 +739,8 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Belum Dikerjakan',
@@ -744,12 +748,14 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ), Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -760,7 +766,8 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Sedang Dikerjakan',
@@ -768,7 +775,8 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -785,7 +793,8 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Tugas Dipending',
@@ -793,12 +802,14 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ), Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -809,7 +820,8 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Tugas Diselesaikan',
@@ -817,7 +829,8 @@ class ResumeEmployeesTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -855,7 +868,8 @@ class ResumeEmployeeTask extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ), textAlign: TextAlign.center,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           Row(
@@ -872,7 +886,8 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Belum Dikerjakan',
@@ -880,12 +895,14 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ), Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -896,7 +913,8 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Sedang Dikerjakan',
@@ -904,12 +922,14 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ), Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -920,7 +940,8 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Tugas Dipending',
@@ -928,12 +949,14 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ), Expanded(
+              ),
+              Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -944,7 +967,8 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Text(
                         'Tugas Diselesaikan',
@@ -952,7 +976,8 @@ class ResumeEmployeeTask extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
-                        ), textAlign: TextAlign.center,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
